@@ -1,0 +1,2 @@
+Beer Mapping API
+api key: ec947effd0571340a08a8db7eb1723a6
