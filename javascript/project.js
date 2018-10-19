@@ -1,8 +1,29 @@
-var queryUrl = 'http://beermapping.com/webservice/locstate/ec947effd0571340a08a8db7eb1723a6/nj&s=json';
-//const responseDiv = document.getElementById('response');
-var breweryNamesDiv = document.getElementById('main-container');
+var mainContainderDiv = document.getElementById('main-container');
+var searchForm = document.getElementById('search-form');
+var searchButton = document.getElementById('search-button');
+var stateSelect = document.getElementById('state-select');
 
-function getStateResults(state) {
+var queryUrl = 'http://beermapping.com/webservice/locstate/ec947effd0571340a08a8db7eb1723a6/';
+var baseUrl = 'http://beermapping.com/webservice/locstate/ec947effd0571340a08a8db7eb1723a6/';
+var jsonAppender = '&s=json';
+
+document.addEventListener('DOMContentLoaded', function() {
+    searchForm.addEventListener('submit', submitHandler);
+    searchButton.addEventListener('click', searchBreweries);
+})
+
+function submitHandler(submitEvent) {
+    submitEvent.preventDefault();
+  }
+
+function searchBreweries() {
+    let state = stateSelect.value;
+
+    queryUrl = baseUrl + state + jsonAppender;
+    getStateResults();
+}
+
+function getStateResults() {
     console.log(queryUrl);
     $.ajax({
         url: queryUrl,
@@ -13,6 +34,9 @@ function getStateResults(state) {
 }
 
 function populateNames(locations) {
+    while(mainContainderDiv.firstChild) {
+        mainContainderDiv.removeChild(mainContainderDiv.firstChild);
+    }
 
     let citySort = sortByCity(locations);
     console.log(citySort);
@@ -54,7 +78,7 @@ function populateNames(locations) {
             phone.textContent = current.phone;
             container.appendChild(phone);
 
-            breweryNamesDiv.appendChild(container);
+            mainContainderDiv.appendChild(container);
         }
     }
 }
@@ -68,5 +92,3 @@ function sortByCity(breweries) {
         return 0;
     });
 }
-
-getStateResults('NJ');
