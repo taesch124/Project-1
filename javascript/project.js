@@ -42,6 +42,7 @@ function searchBreweries() {
 
 function getStateResults() {
     console.log(queryUrl);
+    currentMarkers = [];
     $.ajax({
         url: queryUrl,
         method: 'GET'
@@ -51,7 +52,6 @@ function getStateResults() {
 }
 
 function populateBreweries(locations) {
-    currentMarkers.splice(0, currentMarkers.length);
     while(breweryListDiv.firstChild) {
         breweryListDiv.removeChild(breweryListDiv.firstChild);
     }
@@ -130,8 +130,8 @@ function codeAddress(geocoder, map, address) {
           position: results[0].geometry.location,
           zoom: 15
         });
-        console.log(marker);
         currentMarkers.push(marker);
+        console.log(currentMarkers);
         setMapBounds(currentMarkers);
       } else {
         console.error('Geocode was not successful for the following reason: ' + status);
@@ -141,14 +141,10 @@ function codeAddress(geocoder, map, address) {
 
   function setMapBounds(markers) {
     var bounds = new google.maps.LatLngBounds();
-    console.log(markers);
-    console.log(markers.length);
 
-    for (let i = 0; i < 6; i++) {
-        console.log('hi');
+    for (let i = 0; i < markers.length; i++) {
         bounds.extend(markers[i].getPosition());
     }
-    console.log(bounds);
     
     map.setCenter(bounds.getCenter());
     map.fitBounds(bounds);
