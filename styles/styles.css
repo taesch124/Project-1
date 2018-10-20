@@ -15,17 +15,41 @@ body {
     font-size: 18px;
 }
 
-.container {
+.content {
     padding: 1.5rem;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#main-container {
+    display: flex;
+    flex-flow: row nowrap;
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.search-bar {
+    margin-bottom: 1rem; 
+}
+
+#breweries-list {
+    flex: 1 0 auto;
+    margin-right: .5rem;
 }
 
 .brewery-container {
     border: 1px solid black;
     border-radius: .4rem;
     margin: .25rem;
+    padding: .25rem;
+    min-width: 420px;
 }
 
-
+#map {
+    height: 640px;
+    flex: 1 1 auto;
+    position: sticky;
+}
 
 
 
