@@ -1,11 +1,12 @@
 var mainContainderDiv = document.getElementById('main-container');
-var breweryListDiv = document.getElementById('brewery-list');
+var nearbyLocationsDiv = document.getElementById('brewery-list');
 var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
 
 var queryUrl = '';
+
 var stateUrl = 'http://beermapping.com/webservice/locstate/ec947effd0571340a08a8db7eb1723a6/';
 var cityUrl = 'http://beermapping.com/webservice/loccity/ec947effd0571340a08a8db7eb1723a6/';
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
@@ -13,6 +14,7 @@ var jsonAppender = '&s=json';
 
 var geocoder;
 var map;
+var placesService;
 var currentMarkers = [];
 
 //initMap();
@@ -37,9 +39,47 @@ function searchBreweries() {
     }
 
     
-    getStateResults();
+    //getStateResults();
+    getGooglePlaces();
 }
 
+function getGooglePlaces() {
+    console.log('calling google places');
+    let locationSearch = new google.maps.LatLng(40.7196062, -74.0426357);
+    let locationRequest = {
+        location: locationSearch,
+        radius: 2000,
+        type: ['bar']
+    };
+
+    placesService = new google.maps.places.PlacesService(map);
+    placesService.nearbySearch(locationRequest, function(results, status) {
+        console.log(status);
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            currentMarkers = [];
+            console.log(results);
+            populateLocations(results);
+            for (var i = 0; i < results.length; i++) {
+              var place = results[i];
+              let marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location,
+                zoom: 15
+              });
+              currentMarkers.push(marker);
+            }
+
+            //console.log(currentMarkers);
+            setMapBounds(currentMarkers);
+        } else if (status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+            populateNoResultsMessage();
+        }
+
+    })
+}
+
+//Beer Mapping API - DEPRECATED
+/*
 function getStateResults() {
     console.log(queryUrl);
     currentMarkers = [];
@@ -47,19 +87,20 @@ function getStateResults() {
         url: queryUrl,
         method: 'GET'
     }).then(function(response) {
-        populateBreweries(response);
+        populateLocations(response);
     });
 }
+*/
 
-function populateBreweries(locations) {
-    while(breweryListDiv.firstChild) {
-        breweryListDiv.removeChild(breweryListDiv.firstChild);
+function populateLocations(locations) {
+    console.log(locations);
+    while(nearbyLocationsDiv.firstChild) {
+        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
 
-    let citySort = sortByCity(locations);
-    console.log(citySort);
-    for(let i = 0; i < citySort.length; i++) {
-        let current = citySort[i];
+    let ratingSort = sortByRating(locations);
+    for(let i = 0; i < ratingSort.length; i++) {
+        let current = ratingSort[i];
         
 
         if(current.status = 'Brewery') {
@@ -73,18 +114,16 @@ function populateBreweries(locations) {
             
             if (current.overall != 0 ) {
                 let rating = document.createElement('p');
-                rating.textContent = 'Rated: ' + current.overall;
+                rating.textContent = 'Rated: ' + current.rating;
                 container.appendChild(rating);
             }
 
-            let streetAddress = document.createElement('p');
-            streetAddress.textContent = current.street;
-            container.appendChild(streetAddress);
+            let address = document.createElement('p');
+            address.textContent = current.vicinity;
+            container.appendChild(address);
 
-            let cityAddress = document.createElement('p');
-            cityAddress.textContent = current.city + ', ' + current.state + ' ' + current.zip;
-            container.appendChild(cityAddress);
-
+            //No website data or phone data
+            /*
             let website = document.createElement('a');
             if (current.url) {
                 website.setAttribute('href', 'http://www.' + current.url);
@@ -92,24 +131,33 @@ function populateBreweries(locations) {
                 website.textContent = 'Vist their site';
                 container.appendChild(website);
             }
+            
 
             let phone = document.createElement('p');
             phone.textContent = current.phone;
             container.appendChild(phone);
+            */
 
-            breweryListDiv.appendChild(container);
-            codeAddress(geocoder, map, streetAddress.textContent + ', ' + cityAddress.textContent);
+            nearbyLocationsDiv.appendChild(container);
+            //codeAddress(geocoder, map, address.textContent + ', ' + cityAddress.textContent);
         }
     }
 }
 
-function sortByCity(breweries) {
-    return breweries.sort((a,b) => {
-        let cityA = a.city.toLowerCase(); 
-        let cityB = b.city.toLowerCase();
-        if (cityA < cityB) return -1;
-        if (cityA > cityB) return 1;
-        return 0;
+function populateNoResultsMessage() {
+    let container = document.createElement('div');
+    container.classList.add('brewery-container');
+
+    let message = document.createElement('h3');
+    message.textContent = 'Could not find any results for selected location.';
+    container.appendChild(message);
+
+    nearbyLocationsDiv.appendChild(container);
+}
+
+function sortByRating(locations) {
+    return locations.sort((a,b) => {
+        return b.rating - a.rating;
     });
 }
 
