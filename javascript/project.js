@@ -6,91 +6,61 @@ var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
 
 var queryUrl = '';
-
-var stateUrl = 'http://beermapping.com/webservice/locstate/ec947effd0571340a08a8db7eb1723a6/';
-var cityUrl = 'http://beermapping.com/webservice/loccity/ec947effd0571340a08a8db7eb1723a6/';
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
-var jsonAppender = '&s=json';
 
 var geocoder;
 var map;
 var placesService;
+var currentLocation;
 var currentMarkers = [];
-
-//initMap();
 
 document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
-    searchButton.addEventListener('click', searchBreweries);
+    searchButton.addEventListener('click', searchCityState);
 })
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
-  }
-
-function searchBreweries() {
+}
+  
+function searchCityState() {
     let state = stateSelect.value;
-
     let city = citySearch.value.trim();
+    let location;
     if(city) {
-        queryUrl = cityUrl + city + ',' + state + jsonAppender;
+        location = city + ', ' + state;
     } else {
-        queryUrl = stateUrl + state + jsonAppender;
+        location = state;
     }
 
-    
-    //getStateResults();
-    getGooglePlaces();
+    codeAddress(geocoder, location);
 }
 
-function getGooglePlaces() {
+function getGooglePlaces(location) {
     console.log('calling google places');
-    let locationSearch = new google.maps.LatLng(40.7196062, -74.0426357);
+    currentLocation = location;
     let locationRequest = {
-        location: locationSearch,
+        location: currentLocation,
         radius: 2000,
         type: ['bar']
     };
 
     placesService = new google.maps.places.PlacesService(map);
     placesService.nearbySearch(locationRequest, function(results, status) {
-        console.log(status);
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             currentMarkers = [];
-            console.log(results);
             populateLocations(results);
             for (var i = 0; i < results.length; i++) {
               var place = results[i];
-              let marker = new google.maps.Marker({
-                map: map,
-                position: place.geometry.location,
-                zoom: 15
-              });
-              currentMarkers.push(marker);
+              createMapMarker(place);
+              setMapBounds(currentMarkers);
             }
-
-            //console.log(currentMarkers);
-            setMapBounds(currentMarkers);
         } else if (status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
             populateNoResultsMessage();
         }
 
     })
 }
-
-//Beer Mapping API - DEPRECATED
-/*
-function getStateResults() {
-    console.log(queryUrl);
-    currentMarkers = [];
-    $.ajax({
-        url: queryUrl,
-        method: 'GET'
-    }).then(function(response) {
-        populateLocations(response);
-    });
-}
-*/
 
 function populateLocations(locations) {
     console.log(locations);
@@ -122,26 +92,10 @@ function populateLocations(locations) {
             address.textContent = current.vicinity;
             container.appendChild(address);
 
-            //No website data or phone data
-            /*
-            let website = document.createElement('a');
-            if (current.url) {
-                website.setAttribute('href', 'http://www.' + current.url);
-                website.setAttribute('target', '_blank');
-                website.textContent = 'Vist their site';
-                container.appendChild(website);
-            }
-            
-
-            let phone = document.createElement('p');
-            phone.textContent = current.phone;
-            container.appendChild(phone);
-            */
-
             nearbyLocationsDiv.appendChild(container);
-            //codeAddress(geocoder, map, address.textContent + ', ' + cityAddress.textContent);
         }
     }
+
 }
 
 function populateNoResultsMessage() {
@@ -153,6 +107,24 @@ function populateNoResultsMessage() {
     container.appendChild(message);
 
     nearbyLocationsDiv.appendChild(container);
+}
+
+function createMapMarker(place) {
+    let marker = new google.maps.Marker({
+        title: place.name,
+        map: map,
+        position: place.geometry.location,
+        zoom: 15
+      });
+      currentMarkers.push(marker);
+
+      let infoWindow = new google.maps.InfoWindow({
+          content: place.name
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+          infoWindow.open(map, marker);
+      });
 }
 
 function sortByRating(locations) {
@@ -170,30 +142,24 @@ function initMap() {
     geocoder = new google.maps.Geocoder();
 }
 
-function codeAddress(geocoder, map, address) {
+function codeAddress(geocoder, address) {
     geocoder.geocode({'address': address}, function(results, status) {
-      if (status === 'OK') {
-        let marker = new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location,
-          zoom: 15
-        });
-        currentMarkers.push(marker);
-        console.log(currentMarkers);
-        setMapBounds(currentMarkers);
-      } else {
-        console.error('Geocode was not successful for the following reason: ' + status);
-      }
+        if (status === 'OK') {
+            console.log(results[0].geometry.location);
+            getGooglePlaces(results[0].geometry.location); 
+        } else {
+            console.error('Geocode was not successful for the following reason: ' + status);
+        }
     });
-  }
+}
 
-  function setMapBounds(markers) {
-    var bounds = new google.maps.LatLngBounds();
+function setMapBounds(markers) {
+var bounds = new google.maps.LatLngBounds();
 
-    for (let i = 0; i < markers.length; i++) {
-        bounds.extend(markers[i].getPosition());
-    }
-    
-    map.setCenter(bounds.getCenter());
-    map.fitBounds(bounds);
-  }
+for (let i = 0; i < markers.length; i++) {
+    bounds.extend(markers[i].getPosition());
+}
+
+map.setCenter(bounds.getCenter());
+map.fitBounds(bounds);
+}
