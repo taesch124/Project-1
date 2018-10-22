@@ -43,6 +43,7 @@ body {
     margin: .25rem;
     padding: .25rem;
     min-width: 420px;
+    cursor: pointer;
 }
 
 #map {
