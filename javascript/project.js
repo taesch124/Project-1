@@ -163,3 +163,98 @@ for (let i = 0; i < markers.length; i++) {
 map.setCenter(bounds.getCenter());
 map.fitBounds(bounds);
 }
+
+var countryForMap
+
+ var eventVenue = []
+
+ var keyword; 
+ var cityInput; 
+
+
+
+ $("#search-event").on("click", function(event){ 
+event.preventDefault(); 
+$(".events-view").empty()
+
+var keyword = $("#event-input").val(). trim();
+var cityInput = $("#city-input").val(). trim();
+
+console.log(keyword)
+console.log(cityInput)
+
+ var url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword="+ keyword + "&city=" +cityInput+ "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+
+
+
+  $.ajax({
+    url: url,
+    method: 'GET',
+    async:true,
+    dataType: "json",
+  }).done(function(result) {
+    console.log(result);
+    console.log(result._embedded.events[0].name)
+    var results = result.data;
+
+     for (var i = 0; i < result._embedded.events.length; i++) {
+
+                var entireDiv = $("<div>");
+                entireDiv.attr("class", "style-of-div")
+                
+                var a = $("<p>");
+                a.attr("data-name",result._embedded.events[i].name);
+                a.text(result._embedded.events[i].name);
+
+
+                var cityDiv = $("<p>");
+                cityDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].city.name);
+                console.log(result._embedded.events[i]._embedded.venues[0].city.name)
+                cityDiv.text(result._embedded.events[i]._embedded.venues[0].city.name);
+
+                var stateDiv = $("<p>");
+                stateDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].state.name);
+                console.log(result._embedded.events[i]._embedded.venues[0].state.name)
+                stateDiv.text(result._embedded.events[i]._embedded.venues[0].state.name);
+                
+                
+                var venueDiv= $("<p>");
+                venueDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].name);
+                console.log(result._embedded.events[i]._embedded.venues[0].name)
+                venueDiv.text(result._embedded.events[i]._embedded.venues[0].name);
+                
+
+                var dateDiv = $("<p>");
+                dateDiv.attr("data-name",result._embedded.events[i].dates.start.localDate);
+                console.log(result._embedded.events[i].dates.start.localDate)
+                dateDiv.text(result._embedded.events[i].dates.start.localDate);
+                
+
+                var timeDiv = $("<p>");
+                timeDiv.attr("data-name",result._embedded.events[i].dates.start.localTime);
+                console.log(result._embedded.events[i].dates.start.localTime)
+                timeDiv.text(result._embedded.events[i].dates.start.localTime);
+                
+                eventVenue.push({ 
+                
+                latting:(result._embedded.events[i]._embedded.venues[0].location), 
+                address: (result._embedded.events[i]._embedded.venues[0].address.line1), 
+
+                })
+
+               
+                entireDiv.append(a)
+                entireDiv.append(venueDiv)
+                entireDiv.append(cityDiv)
+                entireDiv.append(stateDiv)
+                entireDiv.append(dateDiv)
+                entireDiv.append(timeDiv)
+                $(".events-view").append(entireDiv);
+}
+
+
+  }).fail(function(err) {
+    throw err;
+  })
+
+ }); 
