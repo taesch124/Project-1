@@ -13,6 +13,8 @@ var map;
 var placesService;
 var currentLocation;
 var currentMarkers = [];
+var searchRadiusMin = 2000,
+searchRadius = searchRadiusMin;
 
 document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
@@ -32,33 +34,32 @@ function searchCityState() {
     } else {
         location = state;
     }
+    
+    searchRadius = searchRadiusMin;
 
     codeAddress(geocoder, location);
 }
 
 function getGooglePlaces(location) {
-    console.log('calling google places');
     currentLocation = location;
     let locationRequest = {
         location: currentLocation,
-        radius: 2000,
+        radius: searchRadius,
         type: ['bar']
     };
 
     placesService = new google.maps.places.PlacesService(map);
     placesService.nearbySearch(locationRequest, function(results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
+        if (status == google.maps.places.PlacesServiceStatus.OK && results.length >= 6) {
             currentMarkers = [];
             populateLocations(results);
-            for (var i = 0; i < results.length; i++) {
-              var place = results[i];
-              createMapMarker(place);
-              setMapBounds(currentMarkers);
-            }
+            setMapBounds(currentMarkers);
+        } else if(status == google.maps.places.PlacesServiceStatus.OK && results.length < 6) {
+            searchRadius+= 2000;
+            getGooglePlaces(location);
         } else if (status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
             populateNoResultsMessage();
         }
-
     })
 }
 
@@ -93,6 +94,7 @@ function populateLocations(locations) {
             container.appendChild(address);
 
             nearbyLocationsDiv.appendChild(container);
+            createMapMarker(current, container);
         }
     }
 
@@ -109,7 +111,7 @@ function populateNoResultsMessage() {
     nearbyLocationsDiv.appendChild(container);
 }
 
-function createMapMarker(place) {
+function createMapMarker(place, placeCard) {
     let marker = new google.maps.Marker({
         title: place.name,
         map: map,
@@ -118,13 +120,23 @@ function createMapMarker(place) {
       });
       currentMarkers.push(marker);
 
+      let contentString = '<h2>' + place.name + '</h2>' +
+                          '<p>' +  convertKmToMi(getDistanceFromLatLonInKm(
+                                                    currentLocation.lat(), 
+                                                    currentLocation.lng(), 
+                                                    marker.position.lat(), 
+                                                    marker.position.lng()))
+                                    .toFixed(2) + 'mi</p>';
       let infoWindow = new google.maps.InfoWindow({
-          content: place.name
+          content: contentString
       });
 
       google.maps.event.addListener(marker, 'click', function() {
           infoWindow.open(map, marker);
       });
+      placeCard.addEventListener('click', function() {
+          infoWindow.open(map, marker);
+      })
 }
 
 function sortByRating(locations) {
@@ -145,7 +157,7 @@ function initMap() {
 function codeAddress(geocoder, address) {
     geocoder.geocode({'address': address}, function(results, status) {
         if (status === 'OK') {
-            console.log(results[0].geometry.location);
+            console.log(results[0]);
             getGooglePlaces(results[0].geometry.location); 
         } else {
             console.error('Geocode was not successful for the following reason: ' + status);
@@ -162,4 +174,26 @@ for (let i = 0; i < markers.length; i++) {
 
 map.setCenter(bounds.getCenter());
 map.fitBounds(bounds);
+}
+
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2-lat1);  // deg2rad below
+    var dLon = deg2rad(lon2-lon1); 
+    var a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+      ; 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c; // Distance in km
+    return d;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI/180)
+}
+
+function convertKmToMi(km) {
+    return (1/0.621371) * km;
 }
