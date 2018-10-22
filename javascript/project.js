@@ -252,7 +252,6 @@ console.log(cityInput)
                 $(".events-view").append(entireDiv);
 }
 
-
   }).fail(function(err) {
     throw err;
   })
