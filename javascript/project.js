@@ -1,5 +1,5 @@
 var mainContainderDiv = document.getElementById('main-container');
-var nearbyLocationsDiv = document.getElementById('brewery-list');
+var nearbyLocationsDiv = document.getElementById('results-list');
 var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
@@ -7,6 +7,8 @@ var citySearch = document.getElementById('city-search');
 
 var queryUrl = '';
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
+
+var eventListings = [];
 
 var geocoder;
 var map;
@@ -18,7 +20,8 @@ searchRadius = searchRadiusMin;
 
 document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
-    searchButton.addEventListener('click', searchCityState);
+    //searchButton.addEventListener('click', searchCityState);
+    //$('document').on('click', '.event-listing', findAroundVenue);
 })
 
 function submitHandler(submitEvent) {
@@ -29,15 +32,14 @@ function searchCityState() {
     let state = stateSelect.value;
     let city = citySearch.value.trim();
     let location;
-    if(city) {
-        location = city + ', ' + state;
-    } else {
-        location = state;
-    }
-    
     searchRadius = searchRadiusMin;
-
-    codeAddress(geocoder, location);
+    if(city) {
+        location = {city: city,  state: state};
+        codeAddress(geocoder, location.city, + ', ' + location.state);
+    } else {
+        location = {city: undefined, state: state};
+        codeAddress(geocoder, location.state);
+    }
 }
 
 function getGooglePlaces(location) {
@@ -207,88 +209,101 @@ var countryForMap
 
 
 
- $("#search-event").on("click", function(event){ 
-event.preventDefault(); 
-$(".events-view").empty()
+ $("#search-button").on("click", function(event){ 
+    event.preventDefault(); 
+    $(".events-view").empty()
 
-var keyword = $("#event-input").val(). trim();
-var cityInput = $("#city-input").val(). trim();
+    var keyword = $("#event-search").val(). trim();
+    var cityInput = $("#city-search").val(). trim();
+    var stateInput = $('#state-select').val().trim();   
 
-console.log(keyword)
-console.log(cityInput)
-
- var url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword="+ keyword + "&city=" +cityInput+ "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
-
+    var url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword="+ keyword + "&city=" +cityInput+ "&state=" + stateInput + "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    console.log(url);
 
 
-  $.ajax({
-    url: url,
-    method: 'GET',
-    async:true,
-    dataType: "json",
-  }).done(function(result) {
-    console.log(result);
-    console.log(result._embedded.events[0].name)
-    var results = result.data;
+    $.ajax({
+        url: url,
+        method: 'GET',
+        async:true,
+        dataType: "json",
+    }).done(function(result) {
+        console.log(result);
+        
 
-     for (var i = 0; i < result._embedded.events.length; i++) {
+        while(nearbyLocationsDiv.firstChild) {
+            nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+        }
 
-                var entireDiv = $("<div>");
-                entireDiv.attr("class", "style-of-div")
+        if(!result._embedded) {
+            populateNoResultsMessage();
+            return;
+        }
+
+        eventListings = result._embedded.events;
+        console.log(eventListings);
+
+        for (var i = 0; i < result._embedded.events.length; i++) {
+
+                    var entireDiv = $("<div>");
+                    entireDiv.attr("data-latlng", JSON.stringify(result._embedded.events[i]._embedded.venues[0].location));
+                    entireDiv.attr("class", "style-of-div")
+                    entireDiv.addClass("event-listing");
+                    
+                    var a = $("<p>");
+                    a.attr("data-name",result._embedded.events[i].name);
+                    a.text(result._embedded.events[i].name);
+
+
+                    var cityDiv = $("<p>");
+                    cityDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].city.name);
+                    cityDiv.text(result._embedded.events[i]._embedded.venues[0].city.name);
+
+                    var stateDiv = $("<p>");
+                    stateDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].state.name);
+                    stateDiv.text(result._embedded.events[i]._embedded.venues[0].state.name);
+                    
+                    
+                    var venueDiv= $("<p>");
+                    venueDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].name);
+                    venueDiv.text(result._embedded.events[i]._embedded.venues[0].name);
+                    
+
+                    var dateDiv = $("<p>");
+                    dateDiv.attr("data-name",result._embedded.events[i].dates.start.localDate);
+                    dateDiv.text(result._embedded.events[i].dates.start.localDate);
+                    
+
+                    var timeDiv = $("<p>");
+                    timeDiv.attr("data-name",result._embedded.events[i].dates.start.localTime);
+                    timeDiv.text(result._embedded.events[i].dates.start.localTime);
+                    
+                    eventVenue.push({ 
+                    
+                    latting:(result._embedded.events[i]._embedded.venues[0].location), 
+                    address: (result._embedded.events[i]._embedded.venues[0].address.line1), 
+
+                    })
+
                 
-                var a = $("<p>");
-                a.attr("data-name",result._embedded.events[i].name);
-                a.text(result._embedded.events[i].name);
+                    entireDiv.append(a)
+                    entireDiv.append(venueDiv)
+                    entireDiv.append(cityDiv)
+                    entireDiv.append(stateDiv)
+                    entireDiv.append(dateDiv)
+                    entireDiv.append(timeDiv)
+                    $('#results-list').append(entireDiv);
+    }
 
-
-                var cityDiv = $("<p>");
-                cityDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].city.name);
-                console.log(result._embedded.events[i]._embedded.venues[0].city.name)
-                cityDiv.text(result._embedded.events[i]._embedded.venues[0].city.name);
-
-                var stateDiv = $("<p>");
-                stateDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].state.name);
-                console.log(result._embedded.events[i]._embedded.venues[0].state.name)
-                stateDiv.text(result._embedded.events[i]._embedded.venues[0].state.name);
-                
-                
-                var venueDiv= $("<p>");
-                venueDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].name);
-                console.log(result._embedded.events[i]._embedded.venues[0].name)
-                venueDiv.text(result._embedded.events[i]._embedded.venues[0].name);
-                
-
-                var dateDiv = $("<p>");
-                dateDiv.attr("data-name",result._embedded.events[i].dates.start.localDate);
-                console.log(result._embedded.events[i].dates.start.localDate)
-                dateDiv.text(result._embedded.events[i].dates.start.localDate);
-                
-
-                var timeDiv = $("<p>");
-                timeDiv.attr("data-name",result._embedded.events[i].dates.start.localTime);
-                console.log(result._embedded.events[i].dates.start.localTime)
-                timeDiv.text(result._embedded.events[i].dates.start.localTime);
-                
-                eventVenue.push({ 
-                
-                latting:(result._embedded.events[i]._embedded.venues[0].location), 
-                address: (result._embedded.events[i]._embedded.venues[0].address.line1), 
-
-                })
-
-               
-                entireDiv.append(a)
-                entireDiv.append(venueDiv)
-                entireDiv.append(cityDiv)
-                entireDiv.append(stateDiv)
-                entireDiv.append(dateDiv)
-                entireDiv.append(timeDiv)
-                $(".events-view").append(entireDiv);
-}
-
-  }).fail(function(err) {
-    throw err;
-  })
+    }).fail(function(err) {
+        throw err;
+    })
 
  }); 
+ $(document).on('click', '.event-listing', findAroundVenue);
 
+function findAroundVenue() {
+    let location = JSON.parse($(this).attr('data-latlng'));
+    console.log(location);
+    let latlng = new google.maps.LatLng(location.latitude,location.longitude);
+    getGooglePlaces(latlng);
+}
