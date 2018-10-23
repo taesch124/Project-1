@@ -21,13 +21,6 @@ body {
     flex-flow: column nowrap;
 }
 
-#main-container {
-    display: flex;
-    flex-flow: row nowrap;
-    position: relative;
-    flex: 1 1 auto;
-}
-
 .search-bar {
     margin-bottom: 1rem; 
 }
@@ -42,7 +35,6 @@ body {
     border-radius: .4rem;
     margin: .25rem;
     padding: .25rem;
-    min-width: 420px;
     cursor: pointer;
 }
 
