@@ -180,15 +180,21 @@ function initMap() {
     geocoder = new google.maps.Geocoder();
 }
 
-function codeAddress(geocoder, address) {
-    geocoder.geocode({'address': address}, function(results, status) {
-        if (status === 'OK') {
-            console.log(results[0]);
-            return results[0].geometry.location; 
-        } else {
-            console.error('Geocode was not successful for the following reason: ' + status);
-        }
-    });
+function codeAddress(geocoder, place) {
+    if(place.location) {
+        createVenueMarker(place);
+    } else {
+        console.log(place.address);
+        geocoder.geocode({'address': place.address}, function(results, status) {
+            if (status === 'OK') {
+                console.log(results[0]);
+                place.location = results[0].geometry.location;
+                createVenueMarker(place);
+            } else {
+                console.error('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
 }
 
 function setMapBounds(markers) {
@@ -326,9 +332,6 @@ $.ajax({
         address += ', ' + venue.country;
         if(venue.location) {
             latLng = new google.maps.LatLng(venue.location.latitude, venue.location.longitude);
-        } 
-        else {
-            latLng = codeAddress(geocoder, address);
         }
         
         let place = {
@@ -336,7 +339,7 @@ $.ajax({
             location: latLng,
             address: address
         }
-        createVenueMarker(place);
+        codeAddress(geocoder, place);
     }  
     setMapBounds(venueMarkers);
 
