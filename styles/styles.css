@@ -25,6 +25,10 @@ body {
     margin-bottom: 1rem; 
 }
 
+.result {
+    max-width: 240px;
+}
+
 #breweries-list {
     flex: 1 0 auto;
     margin-right: .5rem;

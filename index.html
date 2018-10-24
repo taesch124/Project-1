@@ -48,28 +48,12 @@
 
     <div class="container" id="main-container">
       <div class="row">
-          <div class="col m6" id="results-list"></div>
+          <div class="col m8 cards-container" id="results-list"></div>
 
-          <div class="col m6" id="map"></div> 
+          <div class="col m4" id="map"></div> 
       </div>
       
     </div>
-
-    <form id="event-form">
-        <label for ="event-input">Search for an event</label>
-        <input type ="text" id="event-input"> 
-        <br>
-        <label for ="city-input">Where?</label>
-        <input type ="text" id="city-input"> 
-        <input id= "search-event" type="submit" value="Search"> 
-    </form>
-        <br>
-        <div class="events-view"></div>
-
-  </div>
-
-
-  <div id="response"></div>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDl9v8uXtsfQWQPQz_VFpW8qk2gHDk4SuM&callback=initMap&libraries=places" async></script>
   <script src="./javascript/project.js"></script>

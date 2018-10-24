@@ -21,13 +21,10 @@ searchRadius = searchRadiusMin;
 
 document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
-    //searchButton.addEventListener('click', searchCityState);
-    //$('document').on('click', '.event-listing', findAroundVenue);
-})
-
-$(document).ready(function(){
+    $("#search-button").on("click", findEventVenues);
+    $(document).on('click', '.event-listing', findAroundVenue);
     $('select').formSelect();
-  });
+})
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
@@ -71,7 +68,6 @@ function getGooglePlaces(location) {
 }
 
 function populateLocations(locations) {
-    console.log(locations);
     while(nearbyLocationsDiv.firstChild) {
         nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
@@ -180,15 +176,20 @@ function initMap() {
     geocoder = new google.maps.Geocoder();
 }
 
-function codeAddress(geocoder, address) {
-    geocoder.geocode({'address': address}, function(results, status) {
-        if (status === 'OK') {
-            console.log(results[0]);
-            return results[0].geometry.location; 
-        } else {
-            console.error('Geocode was not successful for the following reason: ' + status);
-        }
-    });
+function codeAddress(geocoder, place) {
+    if(place.location) {
+        createVenueMarker(place);
+    } else {
+        geocoder.geocode({'address': place.address}, function(results, status) {
+            if (status === 'OK') {
+                place.location = results[0].geometry.location;
+                createVenueMarker(place);
+            } else {
+                console.error('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+    
 }
 
 function setMapBounds(markers) {
@@ -224,34 +225,30 @@ function convertKmToMi(km) {
     return (1/0.621371) * km;
 }
 
-var countryForMap
+function findEventVenues(event) {
+    event.preventDefault(); 
+    $(".events-view").empty();
+    var url;
 
-var eventVenue = []
-
-var keyword; 
-var cityInput; 
-
-
-
-$("#search-button").on("click", function(event){ 
-event.preventDefault(); 
-$(".events-view").empty()
-
-var keyword = $("#event-search").val(). trim();
-var cityInput = $("#city-search").val(). trim();
-var stateInput = $('#state-select').val().trim();   
-
-var url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword="+ keyword + "&city=" +cityInput+ "&state=" + stateInput + "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
-console.log(url);
+    var keyword = $("#event-search").val(). trim();
+    var cityInput = $("#city-search").val(). trim();
+    var stateInput = $('#state-select').val().trim();   
+    
+    if(cityInput) {
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&city=" +cityInput+ "&stateCode=" + stateInput + "&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    } else {
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&stateCode=" + stateInput + "&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    }
+    
+    console.log(url);
 
 
-$.ajax({
-    url: url,
-    method: 'GET',
-    async:true,
-    dataType: "json",
-}).done(function(result) {
-    console.log(result);
+    $.ajax({
+        url: url,
+        method: 'GET',
+        async:true,
+        dataType: "json",
+    }).done(function(result) {
     
 
     while(nearbyLocationsDiv.firstChild) {
@@ -264,7 +261,6 @@ $.ajax({
     }
 
     eventListings = result._embedded.events;
-    console.log(eventListings);
     venueMarkers = [];
     for (var i = 0; i < result._embedded.events.length; i++) {
 
@@ -273,7 +269,8 @@ $.ajax({
 
         var entireDiv = $("<div>");
         entireDiv.attr("data-latlng", JSON.stringify(venue.location));
-        entireDiv.attr("class", "style-of-div")
+        entireDiv.addClass('card');
+        entireDiv.addClass('result');
         entireDiv.addClass("event-listing");
         entireDiv.addClass('card');
         
@@ -320,32 +317,31 @@ $.ajax({
         }
 
         $('#results-list').append(entireDiv);
+
         let latLng;
         let address = venue.address + ', ' + venue.city;
         if(venue.state) address += ', ' + venue.state;
         address += ', ' + venue.country;
-        if(venue.location) {
+        
+        if (venue.location) {
             latLng = new google.maps.LatLng(venue.location.latitude, venue.location.longitude);
-        } 
-        else {
-            latLng = codeAddress(geocoder, address);
         }
+        
         
         let place = {
             name: venue.name, 
             location: latLng,
             address: address
         }
-        createVenueMarker(place);
+
+        codeAddress(geocoder, place);
     }  
     setMapBounds(venueMarkers);
 
     }).fail(function(err) {
         throw err;
     })
-
-}); 
- $(document).on('click', '.event-listing', findAroundVenue);
+}
 
 function findAroundVenue() {
     let location = JSON.parse($(this).attr('data-latlng'));
