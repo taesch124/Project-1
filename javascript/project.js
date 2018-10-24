@@ -15,13 +15,15 @@ var map;
 var placesService;
 var currentLocation;
 var currentMarkers = [];
+var venueMarkers = [];
 var searchRadiusMin = 2000,
 searchRadius = searchRadiusMin;
 
 document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
-    //searchButton.addEventListener('click', searchCityState);
-    //$('document').on('click', '.event-listing', findAroundVenue);
+    $("#search-button").on("click", findEventVenues);
+    $(document).on('click', '.event-listing', findAroundVenue);
+    $('select').formSelect();
 })
 
 function submitHandler(submitEvent) {
@@ -66,7 +68,6 @@ function getGooglePlaces(location) {
 }
 
 function populateLocations(locations) {
-    console.log(locations);
     while(nearbyLocationsDiv.firstChild) {
         nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
@@ -122,7 +123,7 @@ function createMapMarker(place, placeCard) {
       });
       currentMarkers.push(marker);
 
-      let contentString = '<h2>' + place.name + '</h2>' +
+      let contentString = '<h6>' + place.name + '</h6>' +
                           '<p>' +  convertKmToMi(getDistanceFromLatLonInKm(
                                                     currentLocation.lat(), 
                                                     currentLocation.lng(), 
@@ -141,6 +142,25 @@ function createMapMarker(place, placeCard) {
       })
 }
 
+function createVenueMarker(place) {
+    let marker = new google.maps.Marker({
+        title: place.name,
+        map: map,
+        position: place.location,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
+        zoom: 15
+      });
+      venueMarkers.push(marker);
+
+      let contentString = '<h6>' + place.name + '</h6>';
+      let infoWindow = new google.maps.InfoWindow({
+          content: contentString
+      });
+      google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.open(map, marker);
+    });
+}
+
 function sortByRating(locations) {
     return locations.sort((a,b) => {
         return b.rating - a.rating;
@@ -156,15 +176,20 @@ function initMap() {
     geocoder = new google.maps.Geocoder();
 }
 
-function codeAddress(geocoder, address) {
-    geocoder.geocode({'address': address}, function(results, status) {
-        if (status === 'OK') {
-            console.log(results[0]);
-            getGooglePlaces(results[0].geometry.location); 
-        } else {
-            console.error('Geocode was not successful for the following reason: ' + status);
-        }
-    });
+function codeAddress(geocoder, place) {
+    if(place.location) {
+        createVenueMarker(place);
+    } else {
+        geocoder.geocode({'address': place.address}, function(results, status) {
+            if (status === 'OK') {
+                place.location = results[0].geometry.location;
+                createVenueMarker(place);
+            } else {
+                console.error('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+    
 }
 
 function setMapBounds(markers) {
@@ -200,24 +225,21 @@ function convertKmToMi(km) {
     return (1/0.621371) * km;
 }
 
-var countryForMap
-
- var eventVenue = []
-
- var keyword; 
- var cityInput; 
-
-
-
- $("#search-button").on("click", function(event){ 
+function findEventVenues(event) {
     event.preventDefault(); 
-    $(".events-view").empty()
+    $(".events-view").empty();
+    var url;
 
     var keyword = $("#event-search").val(). trim();
     var cityInput = $("#city-search").val(). trim();
     var stateInput = $('#state-select').val().trim();   
-
-    var url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword="+ keyword + "&city=" +cityInput+ "&state=" + stateInput + "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    
+    if(cityInput) {
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&city=" +cityInput+ "&stateCode=" + stateInput + "&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    } else {
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&stateCode=" + stateInput + "&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
+    }
+    
     console.log(url);
 
 
@@ -227,83 +249,102 @@ var countryForMap
         async:true,
         dataType: "json",
     }).done(function(result) {
-        console.log(result);
-        
+    
 
-        while(nearbyLocationsDiv.firstChild) {
-            nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
-        }
-
-        if(!result._embedded) {
-            populateNoResultsMessage();
-            return;
-        }
-
-        eventListings = result._embedded.events;
-        console.log(eventListings);
-
-        for (var i = 0; i < result._embedded.events.length; i++) {
-
-                    var entireDiv = $("<div>");
-                    entireDiv.attr("data-latlng", JSON.stringify(result._embedded.events[i]._embedded.venues[0].location));
-                    entireDiv.attr("class", "style-of-div")
-                    entireDiv.addClass("event-listing");
-                    
-                    var a = $("<p>");
-                    a.attr("data-name",result._embedded.events[i].name);
-                    a.text(result._embedded.events[i].name);
-
-
-                    var cityDiv = $("<p>");
-                    cityDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].city.name);
-                    cityDiv.text(result._embedded.events[i]._embedded.venues[0].city.name);
-
-                    var stateDiv = $("<p>");
-                    stateDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].state.name);
-                    stateDiv.text(result._embedded.events[i]._embedded.venues[0].state.name);
-                    
-                    
-                    var venueDiv= $("<p>");
-                    venueDiv.attr("data-name",result._embedded.events[i]._embedded.venues[0].name);
-                    venueDiv.text(result._embedded.events[i]._embedded.venues[0].name);
-                    
-
-                    var dateDiv = $("<p>");
-                    dateDiv.attr("data-name",result._embedded.events[i].dates.start.localDate);
-                    dateDiv.text(result._embedded.events[i].dates.start.localDate);
-                    
-
-                    var timeDiv = $("<p>");
-                    timeDiv.attr("data-name",result._embedded.events[i].dates.start.localTime);
-                    timeDiv.text(result._embedded.events[i].dates.start.localTime);
-                    
-                    eventVenue.push({ 
-                    
-                    latting:(result._embedded.events[i]._embedded.venues[0].location), 
-                    address: (result._embedded.events[i]._embedded.venues[0].address.line1), 
-
-                    })
-
-                
-                    entireDiv.append(a)
-                    entireDiv.append(venueDiv)
-                    entireDiv.append(cityDiv)
-                    entireDiv.append(stateDiv)
-                    entireDiv.append(dateDiv)
-                    entireDiv.append(timeDiv)
-                    $('#results-list').append(entireDiv);
+    while(nearbyLocationsDiv.firstChild) {
+        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
+
+    if(!result._embedded) {
+        populateNoResultsMessage();
+        return;
+    }
+
+    eventListings = result._embedded.events;
+    venueMarkers = [];
+    for (var i = 0; i < result._embedded.events.length; i++) {
+
+        let event = result._embedded.events[i];
+        let venue = result._embedded.events[i]._embedded.venues[0];
+
+        var entireDiv = $("<div>");
+        entireDiv.attr("data-latlng", JSON.stringify(venue.location));
+        entireDiv.addClass('card');
+        entireDiv.addClass('result');
+        entireDiv.addClass("event-listing");
+        entireDiv.addClass('card');
+        
+        var a = $("<p>");
+        a.attr("data-name",event.name);
+        a.text(event.name);
+        entireDiv.append(a)
+
+        if(venue.city) {
+            var cityDiv = $("<p>");
+            cityDiv.attr("data-name",venue.city.name);
+            cityDiv.text(venue.city.name);
+            entireDiv.append(cityDiv);
+        }
+        
+        if(venue.state) {
+            var stateDiv = $("<p>");
+            stateDiv.attr("data-name",venue.state.name);
+            stateDiv.text(venue.state.name);
+            entireDiv.append(stateDiv);
+        }
+        
+        
+        if(venue.name) {
+            var venueDiv= $("<p>");
+            venueDiv.attr("data-name",venue.name);
+            venueDiv.text(venue.name);
+            entireDiv.append(venueDiv);
+        }
+        
+        
+        if(event.dates) {
+            var dateDiv = $("<p>");
+            dateDiv.attr("data-name",result._embedded.events[i].dates.start.localDate);
+            dateDiv.text(result._embedded.events[i].dates.start.localDate);
+            entireDiv.append(dateDiv);
+        }
+        
+        if(event.dates) {
+            var timeDiv = $("<p>");
+            timeDiv.attr("data-name",result._embedded.events[i].dates.start.localTime);
+            timeDiv.text(result._embedded.events[i].dates.start.localTime);
+            entireDiv.append(timeDiv);
+        }
+
+        $('#results-list').append(entireDiv);
+
+        let latLng;
+        let address = venue.address + ', ' + venue.city;
+        if(venue.state) address += ', ' + venue.state;
+        address += ', ' + venue.country;
+        
+        if (venue.location) {
+            latLng = new google.maps.LatLng(venue.location.latitude, venue.location.longitude);
+        }
+        
+        
+        let place = {
+            name: venue.name, 
+            location: latLng,
+            address: address
+        }
+
+        codeAddress(geocoder, place);
+    }  
+    setMapBounds(venueMarkers);
 
     }).fail(function(err) {
         throw err;
     })
-
- }); 
- $(document).on('click', '.event-listing', findAroundVenue);
+}
 
 function findAroundVenue() {
     let location = JSON.parse($(this).attr('data-latlng'));
-    console.log(location);
     let latlng = new google.maps.LatLng(location.latitude,location.longitude);
     getGooglePlaces(latlng);
 }
