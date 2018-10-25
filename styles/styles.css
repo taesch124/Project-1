@@ -26,7 +26,12 @@ body {
 }
 
 .result {
-    max-width: 240px;
+    width: 240px;
+}
+
+.event-image {
+    width: 240px;
+    height: auto;
 }
 
 #breweries-list {
@@ -43,7 +48,7 @@ body {
 }
 
 #map {
-    height: 640px;
+    height: 420px;
     flex: 1 1 auto;
     position: sticky;
 }
