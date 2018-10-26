@@ -14,7 +14,6 @@
   integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script src="javascript/project.js"></script>
   
   
 </head>
@@ -48,28 +47,12 @@
 
     <div class="container" id="main-container">
       <div class="row">
-          <div class="col m6" id="results-list"></div>
+          <div class="col m6 cards-container" id="results-list"></div>
 
           <div class="col m6" id="map"></div> 
       </div>
       
     </div>
-
-    <form id="event-form">
-        <label for ="event-input">Search for an event</label>
-        <input type ="text" id="event-input"> 
-        <br>
-        <label for ="city-input">Where?</label>
-        <input type ="text" id="city-input"> 
-        <input id= "search-event" type="submit" value="Search"> 
-    </form>
-        <br>
-        <div class="events-view"></div>
-
-  </div>
-
-
-  <div id="response"></div>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDl9v8uXtsfQWQPQz_VFpW8qk2gHDk4SuM&callback=initMap&libraries=places" async></script>
   <script src="./javascript/project.js"></script>
