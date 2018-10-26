@@ -60,7 +60,9 @@ body {
     background-color: aquamarine;
 }
 
-
+.hidden {
+    display: none;
+}
 
 
 

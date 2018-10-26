@@ -5,49 +5,62 @@ var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
 
-var queryUrl = '';
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
 var geocoder;
 var map;
 var placesService;
-var currentLocation;
-var currentMarkers = [];
+
+var eventListings;
+var placeListings;
+var placeMarkers = [];
 var venueMarkers = [];
 var searchRadiusMin = 2000,
 searchRadius = searchRadiusMin;
 
+var currentLocation;
 var chosenEvent;
 var chosenBar;
 
 document.addEventListener('DOMContentLoaded', function() {
-    searchForm.addEventListener('submit', submitHandler);
-    $("#search-button").on("click", findEventVenues);
-    $(document).on('click', '.select-event-link', findAroundVenue);
     $('select').formSelect();
-})
+    searchForm.addEventListener('submit', submitHandler);
+    $("#search-button").on("click", findEvents);
+    $(document).on('click', '.select-event-link', selectEvent);
+    $(document).on('click', '.select-place-link', getChosenPlaceDetails);
+});
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
 }
 
-function findEventVenues(event) {
-    event.preventDefault(); 
+function findEvents(event) {
+    event.preventDefault();
     $(".events-view").empty();
     var url;
 
     var keyword = $("#event-search").val(). trim();
     var cityInput = $("#city-search").val(). trim();
-    var stateInput = $('#state-select').val().trim();   
+    var stateInput = $('#state-select').val().trim();
+    let endDate = getEndDate();
     
     if(cityInput) {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&city=" +cityInput+ "&stateCode=" + stateInput + "&endDateTime=2018-11-30T23:59:59Z&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
-        console.log(url);
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
+        "&city=" +cityInput + 
+        "&stateCode=" + stateInput + 
+        "&endDateTime=" + endDate + 
+        "&radius=50" +
+        "&unit=miles" +
+        "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     } else {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + "&stateCode=" + stateInput + "&endDateTime=2018-11-30T23:59:59Z&radius=50&unit=miles&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
-        console.log(url);
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
+        "&stateCode=" + stateInput + 
+        "&endDateTime=" + endDate + 
+        "&radius=50" +
+        "&unit=miles" +
+        "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
-    
+    console.log(url);
 
     $.ajax({
         url: url,
@@ -55,29 +68,35 @@ function findEventVenues(event) {
         async:true,
         dataType: "json",
     }).done(function(result) {
-        console.log(result);
         if(!result._embedded) {
             populateNoResultsMessage();
             return;
         } else {
+            eventListings = result._embedded.events;
             populateEvents(result._embedded.events);
         }
-        eventListings = result._embedded.events;
+        
 
     }).fail(function(err) {
         throw err;
     })
 }
 
-function findAroundVenue() {
+function selectEvent(event) {
+    event.stopPropagation();
     let location = JSON.parse($(this).parent().attr('data-latlng'));
-    chosenEvent = $(this).parent().attr('data-event-id');
-    console.log(chosenEvent);
+    let eventId = $(this).parent().attr('data-event-id');
+
+    chosenEvent = eventListings.filter(event => event.id === eventId)[0];
+
+    removeMapMarkersByType('venue');
+    createMapMarker(createPlaceFromEventVenue(chosenEvent._embedded.venues[0]), null, 'venue', 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
+    
     let latlng = new google.maps.LatLng(location.latitude,location.longitude);
-    getGooglePlaces(latlng);
+    getGooglePlacesAroundEventVenue(latlng);
 }
 
-function getGooglePlaces(location) {
+function getGooglePlacesAroundEventVenue(location) {
     currentLocation = location;
     let locationRequest = {
         location: currentLocation,
@@ -88,12 +107,12 @@ function getGooglePlaces(location) {
     placesService = new google.maps.places.PlacesService(map);
     placesService.nearbySearch(locationRequest, function(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK && results.length >= 6) {
-            currentMarkers = [];
+            placeMarkers = [];
             populateLocations(results);
-            setMapBounds(currentMarkers);
+            setMapBounds(placeMarkers);
         } else if(status == google.maps.places.PlacesServiceStatus.OK && results.length < 6) {
             searchRadius+= 2000;
-            getGooglePlaces(location);
+            getGooglePlacesAroundEventVenue(location);
         } else if (status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
             populateNoResultsMessage();
         }
@@ -105,93 +124,80 @@ function populateEvents(events) {
         nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
 
+    let sortedEvents = sortEventsByDate(events);
     venueMarkers = [];
-    for (var i = 0; i < events.length; i++) {
+    for (var i = 0; i < sortedEvents.length; i++) {
 
-        let event = events[i];
-        console.log(event);
-        let venue = events[i]._embedded.venues[0];
+        let event = sortedEvents[i];
+        let venue = sortedEvents[i]._embedded.venues[0];
 
-        var entireDiv = $("<div>");
-        entireDiv.attr("data-latlng", JSON.stringify(venue.location));
-        entireDiv.attr('data-event-id', event.id)
-        entireDiv.addClass('card');
-        entireDiv.addClass('result');
+        let entireDiv = document.createElement('div');
+        entireDiv.setAttribute("data-latlng", JSON.stringify(venue.location));
+        entireDiv.setAttribute('data-event-id', event.id)
+        entireDiv.classList.add('card');
+        entireDiv.classList.add('result');
 
         if(event.images[0]) {
-            var eventImage = $('<img>');
-            eventImage.attr('src', event.images[0].url);
-            eventImage.addClass('event-image');
-            entireDiv.append(eventImage);
+            let eventImage = document.createElement('img');
+            eventImage.setAttribute('src', event.images[0].url);
+            eventImage.classList.add('event-image');
+            entireDiv.appendChild(eventImage);
         }
         
         
-        var a = $("<p>");
-        a.attr("data-name",event.name);
-        a.text(event.name);
-        a.addClass('card-title');
-        entireDiv.append(a)
+        let a = document.createElement('p');
+        a.setAttribute("data-name",event.name);
+        a.textContent = event.name;
+        a.classList.add('card-title');
+        entireDiv.appendChild(a)
 
         if(venue.city) {
-            var cityDiv = $("<p>");
-            cityDiv.attr("data-name",venue.city.name);
-            cityDiv.text(venue.city.name);
-            entireDiv.append(cityDiv);
+            let cityDiv = document.createElement('p');
+            cityDiv.setAttribute("data-name",venue.city.name);
+            cityDiv.textContent = venue.city.name;
+            entireDiv.appendChild(cityDiv);
         }
         
         if(venue.state) {
-            var stateDiv = $("<p>");
-            stateDiv.attr("data-name",venue.state.name);
-            stateDiv.text(venue.state.name);
-            entireDiv.append(stateDiv);
+            let stateDiv = document.createElement('p');
+            stateDiv.setAttribute("data-name",venue.state.name);
+            stateDiv.textContent = venue.state.name;
+            entireDiv.appendChild(stateDiv);
         }
         
         
         if(venue.name) {
-            var venueDiv= $("<p>");
-            venueDiv.attr("data-name",venue.name);
-            venueDiv.text(venue.name);
-            entireDiv.append(venueDiv);
+            let venueDiv= document.createElement('p');
+            venueDiv.setAttribute("data-name",venue.name);
+            venueDiv.textContent = venue.name;
+            entireDiv.appendChild(venueDiv);
         }
         
         
         if(event.dates) {
-            var dateDiv = $("<p>");
-            dateDiv.attr("data-name",event.dates.start.localDate);
-            dateDiv.text(event.dates.start.localDate);
-            entireDiv.append(dateDiv);
+            let dateDiv = document.createElement('p');
+            dateDiv.setAttribute("data-name",event.dates.start.localDate);
+            dateDiv.textContent = event.dates.start.localDate;
+            entireDiv.appendChild(dateDiv);
         }
         
         if(event.dates) {
-            var timeDiv = $("<p>");
-            timeDiv.attr("data-name",event.dates.start.localTime);
-            timeDiv.text(event.dates.start.localTime);
-            entireDiv.append(timeDiv);
+            let timeDiv = document.createElement('p');
+            timeDiv.setAttribute("data-name",event.dates.start.localTime);
+            timeDiv.textContent = event.dates.start.localTime;
+            entireDiv.appendChild(timeDiv);
         }
 
-        var selectLink = $('<a>');
-        selectLink.text('Select this location');
-        selectLink.addClass('select-event-link');
-        entireDiv.append(selectLink);
+        let selectLink = document.createElement('a');
+        selectLink.textContent = 'Select this location';
+        selectLink.classList.add('select-event-link');
+        entireDiv.appendChild(selectLink);
 
 
         $('#results-list').append(entireDiv);
 
-        let latLng;
-        let address = venue.address + ', ' + venue.city;
-        if(venue.state) address += ', ' + venue.state;
-        address += ', ' + venue.country;
+        let place = createPlaceFromEventVenue(venue);
         
-        if (venue.location) {
-            latLng = new google.maps.LatLng(venue.location.latitude, venue.location.longitude);
-        }
-        
-        
-        let place = {
-            name: venue.name, 
-            location: latLng,
-            address: address
-        }
 
         codeAddress(geocoder, place, entireDiv);
     }  
@@ -203,10 +209,9 @@ function populateLocations(locations) {
         nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
     }
 
-    let ratingSort = sortByRating(locations);
+    let ratingSort = sortPlacesByRating(locations);
     for(let i = 0; i < ratingSort.length; i++) {
         let current = ratingSort[i];
-        
 
         if(current.status = 'Brewery') {
             let container = document.createElement('div');
@@ -227,11 +232,49 @@ function populateLocations(locations) {
             address.textContent = current.vicinity;
             container.appendChild(address);
 
+            let selectLink = document.createElement('a');
+            selectLink.textContent = 'Select this location';
+            selectLink.classList.add('select-place-link');
+            selectLink.setAttribute('data-id', current.place_id);
+            container.appendChild(selectLink);
+
             nearbyLocationsDiv.appendChild(container);
-            createMapMarker(current, container);
+            createMapMarker(current, container, 'place');
         }
     }
 
+}
+
+function populateUserChoices() {
+    console.log(chosenEvent);
+    console.log(chosenBar);
+
+    while(nearbyLocationsDiv.firstChild) {
+        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+    }
+    nearbyLocationsDiv.classList.remove('m6');
+    nearbyLocationsDiv.classList.add('m12');
+    $('#map').addClass('hidden');
+
+    let eventContainer = document.createElement('div');
+    eventContainer.classList.add('card');
+
+    let eventName = document.createElement('h3');
+    eventName.textContent = chosenEvent.name;
+    eventName.classList.add('card-title');
+    eventContainer.appendChild(eventName);
+
+    nearbyLocationsDiv.appendChild(eventContainer);
+
+    let barContainer = document.createElement('div');
+    barContainer.classList.add('card');
+
+    let barName = document.createElement('h3');
+    barName.textContent = chosenBar.name;
+    barName.classList.add('card-title');
+    barContainer.appendChild(barName);
+
+    nearbyLocationsDiv.appendChild(barContainer);
 }
 
 function populateNoResultsMessage() {
@@ -248,59 +291,122 @@ function populateNoResultsMessage() {
     nearbyLocationsDiv.appendChild(container);
 }
 
-function createMapMarker(place, placeCard) {
+function createPlaceFromEventVenue(venue) {
+    let latLng;
+    let address = venue.address.line1 + ', ' + venue.city.name;
+    if(venue.state) address += ', ' + venue.state.name;
+    address += ', ' + venue.country.countryCode;
+    
+    if (venue.location) {
+        latLng = new google.maps.LatLng(venue.location.latitude, venue.location.longitude);
+    }
+    
+    let place = {
+        name: venue.name, 
+        geometry:  {
+            location: latLng,
+        },
+        address: address
+    }
+    return place;
+}
+
+function getChosenPlaceDetails(event) {
+    event.stopPropagation();
+    let id = this.getAttribute('data-id');
+    placesService = new google.maps.places.PlacesService(map);
+
+    placesService.getDetails({
+        placeId: id
+    }, function(place, status) {
+        if(status === google.maps.places.PlacesServiceStatus.OK) {
+            chosenBar = place;
+            console.log(chosenBar);
+            populateUserChoices();
+        } else {
+            console.error('Could not find place. ' + status);
+        }
+    });
+
+}
+
+function createMapMarker(place, placeCard, type, icon) {
     let marker = new google.maps.Marker({
         title: place.name,
         map: map,
         position: place.geometry.location,
+        icon: icon,
         zoom: 15
-      });
-      currentMarkers.push(marker);
+    });
 
-      let contentString = '<h6>' + place.name + '</h6>' +
-                          '<p>' +  convertKmToMi(getDistanceFromLatLonInKm(
-                                                    currentLocation.lat(), 
-                                                    currentLocation.lng(), 
-                                                    marker.position.lat(), 
-                                                    marker.position.lng()))
-                                    .toFixed(2) + 'mi</p>';
-      let infoWindow = new google.maps.InfoWindow({
-          content: contentString
-      });
+    let contentString = '<h6>' + place.name + '</h6>'
+                        
+    if(type === 'place') {
+        contentString += '<p>Distance from venue: ' +  
+                        convertKmToMi(getDistanceFromLatLonInKm(
+                            currentLocation.lat(), 
+                            currentLocation.lng(), 
+                            marker.position.lat(), 
+                            marker.position.lng()))
+                        .toFixed(2) + 
+                        'mi</p>';
+        placeMarkers.push(marker);
+    } else if (type === 'venue') {
+        venueMarkers.push(marker);
+    }
 
-      google.maps.event.addListener(marker, 'click', function() {
-          infoWindow.open(map, marker);
-      });
-      placeCard.addEventListener('click', function() {
-          infoWindow.open(map, marker);
-      })
-}
-
-function createVenueMarker(place, placeCard) {
-    let marker = new google.maps.Marker({
-        title: place.name,
-        map: map,
-        position: place.location,
-        icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
-        zoom: 15
-      });
-    venueMarkers.push(marker);
-
-    let contentString = '<h6>' + place.name + '</h6>';
     let infoWindow = new google.maps.InfoWindow({
         content: contentString
     });
+
     google.maps.event.addListener(marker, 'click', function() {
         infoWindow.open(map, marker);
     });
-    placeCard.on('click', function() {
-        infoWindow.open(map, marker);
+
+    if(placeCard) {
+        placeCard.addEventListener('click', function() {
+            infoWindow.open(map, marker);
+        });
+    }
+    
+}
+
+function removeMapMarkersByType(type) {
+    if(type === 'venue') {
+        for (var i = 0; i < venueMarkers.length; i++ ) {
+            venueMarkers[i].setMap(null);
+        }
+        venueMarkers = [];
+    }
+    if(type === 'place') {
+        for (var i = 0; i < placeMarkers.length; i++ ) {
+            placeMarkers[i].setMap(null);
+        }
+        placeMarkers = [];
+    }
+
+}
+
+function getEndDate() {
+    let today = new Date();
+    let searchEndDate = today.setMonth(today.getMonth() + 2);
+    return formatDateForQuery(searchEndDate);
+}
+
+function formatDateForQuery(d) {
+    let date = new Date(d);
+    return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T23:59:59Z';
+}
+
+function sortPlacesByRating(locations) {
+    return locations.sort((a,b) => {
+        return b.rating - a.rating;
     });
 }
 
-function sortByRating(locations) {
-    return locations.sort((a,b) => {
-        return b.rating - a.rating;
+function sortEventsByDate(events) {
+    return events.sort((a,b) => {
+        return new Date(a.dates.start.localDate) - new Date(b.dates.start.localDate);
     });
 }
 
@@ -314,13 +420,13 @@ function initMap() {
 }
 
 function codeAddress(geocoder, place, placeCard) {
-    if(place.location) {
-        createVenueMarker(place, placeCard);
+    if(place.geometry) {
+        createMapMarker(place, placeCard, 'venue', 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
     } else {
         geocoder.geocode({'address': place.address}, function(results, status) {
             if (status === 'OK') {
-                place.location = results[0].geometry.location;
-                createVenueMarker(place, placeCard);
+                place.geometry.location = results[0].geometry.location;
+                createMapMarker(place, placeCard, 'venue', 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
             } else {
                 console.error('Geocode was not successful for the following reason: ' + status);
             }
