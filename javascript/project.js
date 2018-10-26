@@ -1,5 +1,5 @@
 var mainContainderDiv = document.getElementById('main-container');
-var nearbyLocationsDiv = document.getElementById('results-list');
+var resultsListDiv = document.getElementById('results-list');
 var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
@@ -120,166 +120,57 @@ function getGooglePlacesAroundEventVenue(location) {
 }
 
 function populateEvents(events) {
-    while(nearbyLocationsDiv.firstChild) {
-        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+    while(resultsListDiv.firstChild) {
+        resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
 
     let sortedEvents = sortEventsByDate(events);
     venueMarkers = [];
     for (var i = 0; i < sortedEvents.length; i++) {
-
         let event = sortedEvents[i];
         let venue = sortedEvents[i]._embedded.venues[0];
-
-        let entireDiv = document.createElement('div');
-        entireDiv.setAttribute("data-latlng", JSON.stringify(venue.location));
-        entireDiv.setAttribute('data-event-id', event.id)
-        entireDiv.classList.add('card');
-        entireDiv.classList.add('result');
-
-        if(event.images[0]) {
-            let eventImage = document.createElement('img');
-            eventImage.setAttribute('src', event.images[0].url);
-            eventImage.classList.add('event-image');
-            entireDiv.appendChild(eventImage);
-        }
-        
-        
-        let a = document.createElement('p');
-        a.setAttribute("data-name",event.name);
-        a.textContent = event.name;
-        a.classList.add('card-title');
-        entireDiv.appendChild(a)
-
-        if(venue.city) {
-            let cityDiv = document.createElement('p');
-            cityDiv.setAttribute("data-name",venue.city.name);
-            cityDiv.textContent = venue.city.name;
-            entireDiv.appendChild(cityDiv);
-        }
-        
-        if(venue.state) {
-            let stateDiv = document.createElement('p');
-            stateDiv.setAttribute("data-name",venue.state.name);
-            stateDiv.textContent = venue.state.name;
-            entireDiv.appendChild(stateDiv);
-        }
-        
-        
-        if(venue.name) {
-            let venueDiv= document.createElement('p');
-            venueDiv.setAttribute("data-name",venue.name);
-            venueDiv.textContent = venue.name;
-            entireDiv.appendChild(venueDiv);
-        }
-        
-        
-        if(event.dates) {
-            let dateDiv = document.createElement('p');
-            dateDiv.setAttribute("data-name",event.dates.start.localDate);
-            dateDiv.textContent = event.dates.start.localDate;
-            entireDiv.appendChild(dateDiv);
-        }
-        
-        if(event.dates) {
-            let timeDiv = document.createElement('p');
-            timeDiv.setAttribute("data-name",event.dates.start.localTime);
-            timeDiv.textContent = event.dates.start.localTime;
-            entireDiv.appendChild(timeDiv);
-        }
-
-        let selectLink = document.createElement('a');
-        selectLink.textContent = 'Select this location';
-        selectLink.classList.add('select-event-link');
-        entireDiv.appendChild(selectLink);
-
-
-        $('#results-list').append(entireDiv);
+        let card = createEventCard(event, venue);
+        resultsListDiv.appendChild(card);
 
         let place = createPlaceFromEventVenue(venue);
-        
-
-        codeAddress(geocoder, place, entireDiv);
+        codeAddress(geocoder, place, card);
     }  
     setMapBounds(venueMarkers);
 }
 
 function populateLocations(locations) {
-    while(nearbyLocationsDiv.firstChild) {
-        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+    while(resultsListDiv.firstChild) {
+        resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
 
     let ratingSort = sortPlacesByRating(locations);
     for(let i = 0; i < ratingSort.length; i++) {
         let current = ratingSort[i];
+        let card = createPlaceCard(current);
 
-        if(current.status = 'Brewery') {
-            let container = document.createElement('div');
-            container.classList.add('card', 'activator');
-
-            let name = document.createElement('h4');
-            name.textContent = current.name;
-            container.appendChild(name);
-
-            
-            if (current.overall != 0 ) {
-                let rating = document.createElement('p');
-                rating.textContent = 'Rated: ' + current.rating;
-                container.appendChild(rating);
-            }
-
-            let address = document.createElement('p');
-            address.textContent = current.vicinity;
-            container.appendChild(address);
-
-            let selectLink = document.createElement('a');
-            selectLink.textContent = 'Select this location';
-            selectLink.classList.add('select-place-link');
-            selectLink.setAttribute('data-id', current.place_id);
-            container.appendChild(selectLink);
-
-            nearbyLocationsDiv.appendChild(container);
-            createMapMarker(current, container, 'place');
-        }
+        resultsListDiv.appendChild(card);
+        createMapMarker(current, card, 'place');
     }
-
 }
 
 function populateUserChoices() {
-    console.log(chosenEvent);
-    console.log(chosenBar);
-
-    while(nearbyLocationsDiv.firstChild) {
-        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+    while(resultsListDiv.firstChild) {
+        resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
-    nearbyLocationsDiv.classList.remove('m6');
-    nearbyLocationsDiv.classList.add('m12');
+    resultsListDiv.classList.remove('m6');
+    resultsListDiv.classList.add('m12');
     $('#map').addClass('hidden');
 
-    let eventContainer = document.createElement('div');
-    eventContainer.classList.add('card');
+    let eventCard = createEventCard(chosenEvent, chosenEvent._embedded.venues[0], true);
+    resultsListDiv.appendChild(eventCard);
 
-    let eventName = document.createElement('h3');
-    eventName.textContent = chosenEvent.name;
-    eventName.classList.add('card-title');
-    eventContainer.appendChild(eventName);
-
-    nearbyLocationsDiv.appendChild(eventContainer);
-
-    let barContainer = document.createElement('div');
-    barContainer.classList.add('card');
-
-    let barName = document.createElement('h3');
-    barName.textContent = chosenBar.name;
-    barName.classList.add('card-title');
-    barContainer.appendChild(barName);
-
-    nearbyLocationsDiv.appendChild(barContainer);
+    let barCard = createPlaceCard(chosenBar, true);
+    resultsListDiv.appendChild(barCard);
 }
 
 function populateNoResultsMessage() {
-    while(nearbyLocationsDiv.firstChild) {
-        nearbyLocationsDiv.removeChild(nearbyLocationsDiv.firstChild);
+    while(resultsListDiv.firstChild) {
+        resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
     let container = document.createElement('div');
     container.classList.add('card');
@@ -288,7 +179,7 @@ function populateNoResultsMessage() {
     message.textContent = 'Could not find any results for selected location.';
     container.appendChild(message);
 
-    nearbyLocationsDiv.appendChild(container);
+    resultsListDiv.appendChild(container);
 }
 
 function createPlaceFromEventVenue(venue) {
@@ -309,6 +200,121 @@ function createPlaceFromEventVenue(venue) {
         address: address
     }
     return place;
+}
+
+function createEventCard(event, venue, chosen) {
+    let container = document.createElement('div');
+    container.setAttribute("data-latlng", JSON.stringify(venue.location));
+    container.setAttribute('data-event-id', event.id)
+    container.classList.add('card');
+    container.classList.add('result');
+
+    if(event.images[0]) {
+        let eventImage = document.createElement('img');
+        eventImage.setAttribute('src', event.images[0].url);
+        eventImage.classList.add('event-image');
+        container.appendChild(eventImage);
+    }
+    
+    
+    let a = document.createElement('p');
+    a.setAttribute("data-name",event.name);
+    a.textContent = event.name;
+    a.classList.add('card-title');
+    container.appendChild(a);
+    
+    if(venue.state && venue.city) {
+        let location = document.createElement('p');
+        location.setAttribute("data-name",venue.state.name);
+        location.textContent = venue.city.name + ', ' + venue.state.name;
+        container.appendChild(location);
+    } else if (venue.state) {
+        let location = document.createElement('p');
+        location.setAttribute("data-name",venue.state.name);
+        location.textContent = venue.state.name;
+        container.appendChild(location);
+    }
+    
+    
+    if(venue.name) {
+        let venueDiv= document.createElement('p');
+        venueDiv.setAttribute("data-name",venue.name);
+        venueDiv.textContent = venue.name;
+        container.appendChild(venueDiv);
+    }
+    
+    
+    if(event.dates) {
+        let dateDiv = document.createElement('p');
+        dateDiv.setAttribute("data-name",event.dates.start.localDate);
+        dateDiv.textContent = event.dates.start.localDate;
+        container.appendChild(dateDiv);
+    }
+    
+    if(event.dates) {
+        let timeDiv = document.createElement('p');
+        timeDiv.setAttribute("data-name",event.dates.start.localTime);
+        timeDiv.textContent = formatTime(event.dates.start.localTime);
+        container.appendChild(timeDiv);
+    }
+
+    if (event.priceRanges) {
+        let usdRange = event.priceRanges.filter(range => range.currency === 'USD')[0];
+        let priceRange = document.createElement('p');
+        priceRange.textContent = '$' + usdRange.min + ' - $' + usdRange.max;
+        container.appendChild(priceRange);
+    }
+
+    if(!chosen) {
+        let selectLink = document.createElement('a');
+        selectLink.textContent = 'Select this location';
+        selectLink.classList.add('select-event-link');
+        container.appendChild(selectLink);
+    }
+
+    return container;
+}
+
+function createPlaceCard(current, chosen) {
+    let container = document.createElement('div');
+    container.classList.add('card', 'activator');
+
+    let name = document.createElement('h4');
+    name.textContent = current.name;
+    container.appendChild(name);
+
+    
+    if (current.overall != 0 ) {
+        let rating = document.createElement('p');
+        rating.textContent = 'Rated: ' + current.rating;
+        container.appendChild(rating);
+    }
+
+    let address = document.createElement('p');
+    address.textContent = current.vicinity;
+    container.appendChild(address);
+
+    if(!chosen) {
+        let selectLink = document.createElement('a');
+        selectLink.textContent = 'Select this location';
+        selectLink.classList.add('select-place-link');
+        selectLink.setAttribute('data-id', current.place_id);
+        container.appendChild(selectLink);
+    } else {
+        let phone = document.createElement('p');
+        phone.textContent = current.formatted_phone_number;
+        container.appendChild(phone);
+
+        if(current.website) {
+            let website = document.createElement('a');
+            website.textContent = current.website;
+            website.setAttribute('href', current.website);
+            container.appendChild(website);
+        }
+        
+    }
+
+    return container
 }
 
 function getChosenPlaceDetails(event) {
@@ -466,4 +472,18 @@ function deg2rad(deg) {
 
 function convertKmToMi(km) {
     return (1/0.621371) * km;
+}
+
+function formatTime(timeString) {
+    let parts = timeString.split(':');
+    let hour = parts[0];
+    let dayPart;
+    if (hour > 12) {
+        hour -= 12;
+        dayPart = 'PM';
+    } else {
+        dayPart = 'AM';
+    }
+
+    return hour + ':' + parts[1] + ' ' + dayPart;
 }
