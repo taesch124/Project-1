@@ -27,6 +27,23 @@ document.addEventListener('DOMContentLoaded', function() {
     $('select').formSelect();
 })
 
+function bindThis (){
+    $('body').css({'overflow':'hidden'});
+      $(document).bind('scroll',function () { 
+           window.scrollTo(0,0); 
+      });
+    }
+    bindThis()
+    
+     $("#clicker").on("click", unbindthis)
+     
+     function unbindthis() {
+       $(document).unbind('scroll'); 
+      $('body').css({'overflow':'visible'});
+     }
+
+
+
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
 }
@@ -175,7 +192,7 @@ function populateEvents(events) {
         entireDiv.append(selectLink);
 
 
-        $('#results-list').append(entireDiv);
+        $('#results-list1').append(entireDiv);
 
         let latLng;
         let address = venue.address + ', ' + venue.city;
