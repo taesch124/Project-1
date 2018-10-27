@@ -45,57 +45,57 @@
   </section>
 
 <section id="section2">
-<div class="container search-bar" id="search-bar" class="container2">
-<div class="row">
-<form class="container" id=search-form>
-<div class="row">
-    <input class="input-field col s-12" type="text" id="event-search">
-</div>
-<div class="row">
-    <button class="col s4 offset-s4 waves-effect waves-light btn" type="submit" id="search-button">Search</button>
-</div>
-</form>
-</div>
-<div class="row">
-    <a href="#section3" id="clicker">
-      Next
-    </a>
+  <div class="container search-bar" id="search-bar" class="container2">
+
+    <div class="row">
+      <form class="container" id=search-form>
+        <div class="row">
+            <input class="input-field col s-12" type="text" id="event-search">
+        </div>
+        <div class="row">
+            <button  class="col s4 offset-s4 waves-effect waves-light btn" type="submit" id="search-button">Search</button>
+        </div>
+      </form>
     </div>
-</div>
+    <div class="row">
+      <a href="#section3" id="clicker">Next</a>
+    </div>
+  </div>
 </section>
 
 
 
 
 <section id ="section3">
-
     <div class="container" id="main-container">
-      <div class="row">
-          <div class="col m6 cards-container" id="results-list1"></div>
 
-          <div class="col m6" id="map"></div> 
-      </div>
       <div class="row">
-          <a href="#section4" id="clicker">
-            Next
-          </a>
+          <div class="col m8 cards-container" id="results-list"></div>
+
+          <div class="col m4 map-container">
+              <div id="map"></div> 
           </div>
-      
+      </div>
+
+      <!-- <div class="row">
+        <a href="#section4" id="clicker">Next</a>
+      </div> -->
+
     </div>
   </section>
 
 
 
-<section id="section4">
+<!-- <section id="section4">
     <div class="container" id="main-container">
         <div class="row">
-            <div class="col m6 cards-container" id="results-list"></div>
+            <div class="col m6 cards-container" id="results-list1"></div>
   
             <div class="col m6" id="map"></div> 
         </div>
         
       </div>
-</section>
+</section> -->
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDl9v8uXtsfQWQPQz_VFpW8qk2gHDk4SuM&callback=initMap&libraries=places" async></script>
   <script src="./javascript/project.js"></script>

@@ -26,26 +26,26 @@ document.addEventListener('DOMContentLoaded', function() {
     $('select').formSelect();
     searchForm.addEventListener('submit', submitHandler);
     $("#search-button").on("click", findEvents);
+    $('#search-button').on('click', unbindthis);
     $(document).on('click', '.select-event-link', selectEvent);
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
 });
 
 function bindThis (){
     $('body').css({'overflow':'hidden'});
-      $(document).bind('scroll',function () { 
-           window.scrollTo(0,0); 
-      });
-    }
-    bindThis()
-    
-     $("#clicker").on("click", unbindthis)
+    $(document).bind('scroll',function () { 
+        window.scrollTo(0,0); 
+    });
+}
+
+bindThis();
+$("#clicker").on("click", unbindthis);
+
      
-     function unbindthis() {
-       $(document).unbind('scroll'); 
-      $('body').css({'overflow':'visible'});
-     }
-
-
+function unbindthis() {
+    $(document).unbind('scroll'); 
+    $('body').css({'overflow':'visible'});
+}
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
@@ -296,7 +296,8 @@ function createPlaceCard(current, chosen) {
     let container = document.createElement('div');
     container.classList.add('card', 'activator');
 
-    let name = document.createElement('h4');
+    let name = document.createElement('p');
+    name.classList.add('card-title');
     name.textContent = current.name;
     container.appendChild(name);
 
