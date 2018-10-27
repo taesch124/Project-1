@@ -52,12 +52,16 @@ body {
 
 .result,
 .card {
-    max-width: 240px;
+    width: 240px;
 }
 
 .event-image {
     width:240px;
     height: auto;
+}
+
+.event-location {
+    color: blue;
 }
 
 #map {
