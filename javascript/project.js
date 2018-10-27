@@ -30,6 +30,23 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
 });
 
+function bindThis (){
+    $('body').css({'overflow':'hidden'});
+      $(document).bind('scroll',function () { 
+           window.scrollTo(0,0); 
+      });
+    }
+    bindThis()
+    
+     $("#clicker").on("click", unbindthis)
+     
+     function unbindthis() {
+       $(document).unbind('scroll'); 
+      $('body').css({'overflow':'visible'});
+     }
+
+
+
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
 }

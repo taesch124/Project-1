@@ -8,6 +8,11 @@ Page Styles
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+
 html,
 body {
     height: 100%;
@@ -26,12 +31,7 @@ body {
 }
 
 .result {
-    width: 240px;
-}
-
-.event-image {
-    width: 240px;
-    height: auto;
+    max-width: 240px;
 }
 
 #breweries-list {
@@ -48,7 +48,7 @@ body {
 }
 
 #map {
-    height: 420px;
+    height: 640px;
     flex: 1 1 auto;
     position: sticky;
 }
@@ -63,6 +63,56 @@ body {
 .hidden {
     display: none;
 }
+#centers{
+    text-align:center;
+}
+
+#btncenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+#section1 {
+    height:100vh;
+    background:lightgray;
+}
+
+#section2 {
+    height:100vh;
+    background: lightsteelblue;
+}
+
+#section3 {
+    height:100vh;
+    background: lightgoldenrodyellow
+}
+
+#section4{
+    height:100vh;
+    background: lightpink; 
+}
+
+.container1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        height: 200px;
+        margin-top: -100px; /* half of you height */
+        width: 400px;
+        margin-left: -200px; /* half of you width */
+}
+
+.container2 {
+    position: absolute;
+    left: 50%;
+    top: 150%;
+    height: 200px;
+    margin-top: -100px; /* half of you height */
+    width: 400px;
+    margin-left: -200px; /* half of you width */
+
+}
 
 
 
@@ -76,4 +126,3 @@ h4 {
     font-size: 1.4rem;
     font-weight: bold;
 }
-
