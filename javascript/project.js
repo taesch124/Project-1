@@ -10,6 +10,7 @@ var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 var geocoder;
 var map;
 var placesService;
+var openWindow;
 
 var eventListings;
 var placeListings;
@@ -25,10 +26,13 @@ var chosenBar;
 document.addEventListener('DOMContentLoaded', function() {
     $('select').formSelect();
     searchForm.addEventListener('submit', submitHandler);
-    $("#search-button").on("click", findEvents);
+    $("#search-button").on('click ', findEvents);
     $('#search-button').on('click', unbindthis);
     $(document).on('click', '.select-event-link', selectEvent);
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
+    bindThis();
+    $("#clicker").on("click", unbindthis);
+    document.getElementById('section1').scrollIntoView();
 });
 
 function bindThis (){
@@ -37,10 +41,6 @@ function bindThis (){
         window.scrollTo(0,0); 
     });
 }
-
-bindThis();
-$("#clicker").on("click", unbindthis);
-
      
 function unbindthis() {
     $(document).unbind('scroll'); 
@@ -92,7 +92,7 @@ function findEvents(event) {
             eventListings = result._embedded.events;
             populateEvents(result._embedded.events);
         }
-        
+        document.getElementById('section3').scrollIntoView();
 
     }).fail(function(err) {
         throw err;
@@ -243,11 +243,13 @@ function createEventCard(event, venue, chosen) {
     if(venue.state && venue.city) {
         let location = document.createElement('p');
         location.setAttribute("data-name",venue.state.name);
+        location.classList.add('event-location');
         location.textContent = venue.city.name + ', ' + venue.state.name;
         container.appendChild(location);
     } else if (venue.state) {
         let location = document.createElement('p');
         location.setAttribute("data-name",venue.state.name);
+        location.classList.add('event-location');
         location.textContent = venue.state.name;
         container.appendChild(location);
     }
@@ -327,6 +329,7 @@ function createPlaceCard(current, chosen) {
             let website = document.createElement('a');
             website.textContent = current.website;
             website.setAttribute('href', current.website);
+            website.setAttribute('target', '_blank');
             container.appendChild(website);
         }
         
@@ -384,11 +387,19 @@ function createMapMarker(place, placeCard, type, icon) {
     });
 
     google.maps.event.addListener(marker, 'click', function() {
+        if(openWindow) {
+            openWindow.close();
+        }
+        openWindow = infoWindow;
         infoWindow.open(map, marker);
     });
 
     if(placeCard) {
         placeCard.addEventListener('click', function() {
+            if(openWindow) {
+                openWindow.close();
+            }
+            openWindow = infoWindow;
             infoWindow.open(map, marker);
         });
     }
@@ -460,14 +471,14 @@ function codeAddress(geocoder, place, placeCard) {
 }
 
 function setMapBounds(markers) {
-var bounds = new google.maps.LatLngBounds();
+    var bounds = new google.maps.LatLngBounds();
 
-for (let i = 0; i < markers.length; i++) {
-    bounds.extend(markers[i].getPosition());
-}
+    for (let i = 0; i < markers.length; i++) {
+        bounds.extend(markers[i].getPosition());
+    }
 
-map.setCenter(bounds.getCenter());
-map.fitBounds(bounds);
+    map.setCenter(bounds.getCenter());
+    map.fitBounds(bounds);
 }
 
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
