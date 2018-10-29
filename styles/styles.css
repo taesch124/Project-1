@@ -30,6 +30,10 @@ body {
     margin-bottom: 1rem; 
 }
 
+#city-search {
+    margin-top: 1rem;
+}
+
 .cards-container {
     display: flex;
     flex-flow: row wrap;
