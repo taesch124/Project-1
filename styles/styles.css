@@ -18,6 +18,7 @@ body {
     height: 100%;
     width: 100%;
     font-size: 18px;
+    
 }
 
 .content {
@@ -90,14 +91,52 @@ body {
     justify-content: center;
   }
 
+
+
+
+#section0 {
+   background-image: url("https://www.transparenttextures.com/patterns/beige-paper.png"); 
+   
+} 
+ #overlay0 { 
+    height: 100vh;
+    /* background: lightgoldenrodyellow; 
+    opacity: 0.6; */
+}
+
+
+.nightout {
+  text-align: center;
+  padding-top: 100px;
+  font-size: 40px;
+  /* font-family: 'Amaranth', sans-serif; */
+  font-family: 'Vidaloka', serif;
+
+}
+
+
 #section1 {
     height:100vh;
-    background:lightgray;
+    background-color: #ebcdc5;
+    background-image: url("https://www.transparenttextures.com/patterns/clean-textile.png")
+}
+.text-color {
+    color: black;
+}
+
+.section1-content {
+    padding-top: 150px;
 }
 
 #section2 {
     height:100vh;
     background: lightsteelblue;
+}
+
+.noideatext {
+  text-align: center;
+  font-size: 15px;
+  font-family: 'Vidaloka', serif;
 }
 
 #section3 {
@@ -109,6 +148,9 @@ body {
     height:100vh;
     background: lightpink; 
 }
+
+
+
 
 .container1 {
         position: absolute;

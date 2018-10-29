@@ -4,6 +4,7 @@ var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
+var sectionOne = document.getElementById('section1')
 
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
     bindThis();
     $("#clicker").on("click", unbindthis);
+    // $("#clicker").on("click", bindThisto);
     document.getElementById('section1').scrollIntoView();
 });
 
@@ -46,6 +48,19 @@ function unbindthis() {
     $(document).unbind('scroll'); 
     $('body').css({'overflow':'visible'});
 }
+
+// function bindThisto (){
+//     $('body').css({'overflow':'hidden'});
+//     $(document).bind('scroll',function () { 
+//         window.scrollTo(sectionOne); 
+//     });
+// }
+
+
+
+
+
+
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
