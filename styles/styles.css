@@ -129,6 +129,12 @@ body {
     background: lightsteelblue;
 }
 
+.noideatext {
+  text-align: center;
+  font-size: 15px;
+  font-family: 'Vidaloka', serif;
+}
+
 #section3 {
     height:100vh;
     background: lightgoldenrodyellow
