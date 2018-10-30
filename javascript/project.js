@@ -87,7 +87,7 @@ function findEvents(event) {
         async:true,
         dataType: "json",
     }).done(function(result) {
-        document.getElementById('section3').scrollIntoView();
+        document.getElementById('section4').scrollIntoView();
         if(!result._embedded) {
             populateNoResultsMessage();
             return;
