@@ -41,6 +41,14 @@ body {
     justify-content: center;
     overflow-y: scroll;
     overflow-x: none;
+    max-height: 90%;
+}
+
+.details-container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    overflow: hidden;
     max-height: 100vh;
 }
 
@@ -48,21 +56,29 @@ body {
     display: flex;
     justify-content: center;
     align-content: center;
-    height: 100%;
+    height: 90%;
 }
 
 .card {
     margin: .5rem;
 }
 
-.result,
-.card {
-    width: 240px;
+.result {
+    width: 280px;
+}
+
+.card-details {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    padding: .75rem;
 }
 
 .event-image {
-    width:240px;
+    width:280px;
     height: auto;
+    max-height: 280px;
+    align-self: center;
 }
 
 .event-location {
@@ -149,9 +165,6 @@ body {
     background: lightpink; 
 }
 
-
-
-
 .container1 {
         position: absolute;
         left: 50%;
@@ -178,7 +191,9 @@ body {
     cursor: pointer;
 }
 
-
+.no-scroll {
+    overflow: hidden;
+}
 
 /*
 ===============================================
