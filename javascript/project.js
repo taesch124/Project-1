@@ -4,7 +4,10 @@ var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
 var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
-var sectionOne = document.getElementById('section1')
+var sectionOne = document.getElementById('section1');
+var startOverButton = document.getElementById('start-over');
+var mapDiv = document.querySelector('.map-container');
+var mapElement = document.getElementById('map');
 
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
@@ -28,6 +31,7 @@ var test= 0
 document.addEventListener('DOMContentLoaded', function() {
     $('select').formSelect();
     searchForm.addEventListener('submit', submitHandler);
+    startOverButton.addEventListener('click', startOver);
     $("#search-button").on('click ', findEvents);
     // $('#search-button').on('click', unbindthis);
     $(document).on('click', '.select-event-link', selectEvent);
@@ -36,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // $("#clicker").on("click", unbindthis);
     // document.getElementById('section1').scrollIntoView();
 });
+
 
 $("#clicker").on("click", function(){
     $("body").css({"overflow":"visible"})
@@ -54,19 +59,22 @@ function findEvents(event) {
     var keyword = $("#event-search").val(). trim();
     var cityInput = $("#city-search").val(). trim();
     var stateInput = $('#state-select').val().trim();
+    let startDate = getStartDate();
     let endDate = getEndDate();
     
     if(cityInput) {
         url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
         "&city=" +cityInput + 
         "&stateCode=" + stateInput + 
+        "&startDateTime=" + startDate +
         "&endDateTime=" + endDate + 
         "&radius=50" +
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     } else {
         url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
-        "&stateCode=" + stateInput + 
+        "&stateCode=" + stateInput +
+        "&startDateTime=" + startDate +
         "&endDateTime=" + endDate + 
         "&radius=50" +
         "&unit=miles" +
@@ -80,6 +88,7 @@ function findEvents(event) {
         async:true,
         dataType: "json",
     }).done(function(result) {
+        document.getElementById('section3').scrollIntoView();
         if(!result._embedded) {
             populateNoResultsMessage();
             return;
@@ -87,7 +96,6 @@ function findEvents(event) {
             eventListings = result._embedded.events;
             populateEvents(result._embedded.events);
         }
-        document.getElementById('section3').scrollIntoView();
 
     }).fail(function(err) {
         throw err;
@@ -96,8 +104,8 @@ function findEvents(event) {
 
 function selectEvent(event) {
     event.stopPropagation();
-    let location = JSON.parse($(this).parent().attr('data-latlng'));
-    let eventId = $(this).parent().attr('data-event-id');
+    let location = JSON.parse($(this).parent().parent().attr('data-latlng'));
+    let eventId = $(this).attr('data-event-id');
 
     chosenEvent = eventListings.filter(event => event.id === eventId)[0];
 
@@ -169,12 +177,25 @@ function populateUserChoices() {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
+
     resultsListDiv.classList.remove('m6');
     resultsListDiv.classList.add('m12');
-    $('#map').addClass('hidden');
+    resultsListDiv.classList.remove('cards-container');
+    resultsListDiv.classList.add('details-container');
+    mapDiv.classList.add('hidden');
+    mapElement.classList.add('hidden');
+
+    let eventHeader = document.createElement('h3');
+    eventHeader.textContent = 'Event';
+    resultsListDiv.appendChild(eventHeader);
 
     let eventCard = createEventCard(chosenEvent, chosenEvent._embedded.venues[0], true);
+    eventCard.classList.add('horizontal');
     resultsListDiv.appendChild(eventCard);
+
+    let placeHeader = document.createElement('h3');
+    placeHeader.textContent = 'After';
+    resultsListDiv.appendChild(placeHeader);
 
     let barCard = createPlaceCard(chosenBar, true);
     resultsListDiv.appendChild(barCard);
@@ -217,119 +238,153 @@ function createPlaceFromEventVenue(venue) {
 function createEventCard(event, venue, chosen) {
     let container = document.createElement('div');
     container.setAttribute("data-latlng", JSON.stringify(venue.location));
-    container.setAttribute('data-event-id', event.id)
     container.classList.add('card');
-    container.classList.add('result');
 
     if(event.images[0]) {
         let eventImage = document.createElement('img');
         eventImage.setAttribute('src', event.images[0].url);
         eventImage.classList.add('event-image');
+        
         container.appendChild(eventImage);
     }
-    
+
+    let detailsDiv = document.createElement('div');
+    detailsDiv.classList.add('card-details');
     
     let a = document.createElement('p');
     a.setAttribute("data-name",event.name);
     a.textContent = event.name;
     a.classList.add('card-title');
-    container.appendChild(a);
+    detailsDiv.appendChild(a);
+
+    if(chosen && venue.name) {
+        if(venue.name) {
+            let venueDiv= document.createElement('p');
+            venueDiv.setAttribute("data-name",venue.name);
+            venueDiv.textContent = venue.name;
+            detailsDiv.appendChild(venueDiv);
+        }
+    }
     
     if(venue.state && venue.city) {
         let location = document.createElement('p');
         location.setAttribute("data-name",venue.state.name);
         location.classList.add('event-location');
         location.textContent = venue.city.name + ', ' + venue.state.name;
-        container.appendChild(location);
+        detailsDiv.appendChild(location);
     } else if (venue.state) {
         let location = document.createElement('p');
         location.setAttribute("data-name",venue.state.name);
         location.classList.add('event-location');
         location.textContent = venue.state.name;
-        container.appendChild(location);
+        detailsDiv.appendChild(location);
     }
-    
-    
-    if(venue.name) {
-        let venueDiv= document.createElement('p');
-        venueDiv.setAttribute("data-name",venue.name);
-        venueDiv.textContent = venue.name;
-        container.appendChild(venueDiv);
-    }
-    
     
     if(event.dates) {
         let dateDiv = document.createElement('p');
         dateDiv.setAttribute("data-name",event.dates.start.localDate);
-        dateDiv.textContent = event.dates.start.localDate;
-        container.appendChild(dateDiv);
-    }
-    
-    if(event.dates) {
-        let timeDiv = document.createElement('p');
-        timeDiv.setAttribute("data-name",event.dates.start.localTime);
-        timeDiv.textContent = formatTime(event.dates.start.localTime);
-        container.appendChild(timeDiv);
-    }
-
-    if (event.priceRanges) {
-        let usdRange = event.priceRanges.filter(range => range.currency === 'USD')[0];
-        let priceRange = document.createElement('p');
-        priceRange.textContent = '$' + usdRange.min + ' - $' + usdRange.max;
-        container.appendChild(priceRange);
+        dateDiv.textContent = formatDate(event.dates.start.localDate);
+        detailsDiv.appendChild(dateDiv);
     }
 
     if(!chosen) {
+        detailsDiv.appendChild(document.createElement('br'));
+
         let selectLink = document.createElement('a');
-        selectLink.textContent = 'Select this location';
+        selectLink.setAttribute('data-event-id', event.id)
+        selectLink.textContent = 'SELECT';
         selectLink.classList.add('select-event-link');
-        container.appendChild(selectLink);
+        detailsDiv.appendChild(selectLink);
+
+        container.classList.add('result');
+    } else {
+        if (event.priceRanges) {
+            let usdRange = event.priceRanges.filter(range => range.currency === 'USD')[0];
+            let priceRange = document.createElement('p');
+            priceRange.textContent = '$' + usdRange.min + ' - $' + usdRange.max;
+            detailsDiv.appendChild(priceRange);
+        }
+
+        if(event.dates) {
+            let timeDiv = document.createElement('p');
+            timeDiv.setAttribute("data-name",event.dates.start.localTime);
+            timeDiv.textContent = formatTime(event.dates.start.localTime);
+            detailsDiv.appendChild(timeDiv);
+        }
+
+        detailsDiv.appendChild(document.createElement('br'));
+
+        if(event.url) {
+            let ticketSales = document.createElement('a');
+            ticketSales.textContent = 'Get Tickets';
+            ticketSales.setAttribute('href', event.url);
+            ticketSales.setAttribute('target', '_blank');
+            detailsDiv.appendChild(ticketSales);
+        }
+
+        if (event.seatmap) {
+            let seatmap = document.createElement('a');
+            seatmap.textContent = 'View Seats';
+            seatmap.setAttribute('href', event.seatmap.staticUrl);
+            seatmap.setAttribute('target', '_blank');
+            detailsDiv.appendChild(seatmap);
+        }
     }
 
+    container.appendChild(detailsDiv);
     return container;
 }
 
 function createPlaceCard(current, chosen) {
     let container = document.createElement('div');
-    container.classList.add('card', 'activator');
+    container.classList.add('card');
+
+    let detailsDiv = document.createElement('div');
+    detailsDiv.classList.add('card-details');
+    
 
     let name = document.createElement('p');
     name.classList.add('card-title');
     name.textContent = current.name;
-    container.appendChild(name);
+    detailsDiv.appendChild(name);
 
     
     if (current.overall != 0 ) {
         let rating = document.createElement('p');
         rating.textContent = 'Rated: ' + current.rating;
-        container.appendChild(rating);
+        detailsDiv.appendChild(rating);
     }
 
     let address = document.createElement('p');
     address.textContent = current.vicinity;
-    container.appendChild(address);
+    detailsDiv.appendChild(address);
 
     if(!chosen) {
+        detailsDiv.appendChild(document.createElement('br'));
+
         let selectLink = document.createElement('a');
-        selectLink.textContent = 'Select this location';
+        selectLink.textContent = 'SELECT';
         selectLink.classList.add('select-place-link');
         selectLink.setAttribute('data-id', current.place_id);
-        container.appendChild(selectLink);
+        detailsDiv.appendChild(selectLink);
+
+        detailsDiv.classList.add('result');
     } else {
         let phone = document.createElement('p');
         phone.textContent = current.formatted_phone_number;
-        container.appendChild(phone);
+        detailsDiv.appendChild(phone);
 
         if(current.website) {
             let website = document.createElement('a');
             website.textContent = current.website;
             website.setAttribute('href', current.website);
             website.setAttribute('target', '_blank');
-            container.appendChild(website);
+            detailsDiv.appendChild(website);
         }
         
     }
 
+    container.appendChild(detailsDiv);
     return container
 }
 
@@ -350,6 +405,24 @@ function getChosenPlaceDetails(event) {
         }
     });
 
+}
+
+function startOver() {
+    while(resultsListDiv.firstChild) {
+        resultsListDiv.removeChild(resultsListDiv.firstChild);
+    }
+
+    removeMapMarkersByType('venue');
+    removeMapMarkersByType('place');
+
+    if(resultsListDiv.classList.contains('m12')) {
+        resultsListDiv.classList.remove('m12');
+        resultsListDiv.classList.add('m6');
+        resultsListDiv.classList.remove('details-container');
+        resultsListDiv.classList.add('cards-container');
+        mapDiv.classList.remove('hidden');
+        mapElement.classList.remove('hidden');
+    }
 }
 
 function createMapMarker(place, placeCard, type, icon) {
@@ -415,17 +488,6 @@ function removeMapMarkersByType(type) {
         placeMarkers = [];
     }
 
-}
-
-function getEndDate() {
-    let today = new Date();
-    let searchEndDate = today.setMonth(today.getMonth() + 2);
-    return formatDateForQuery(searchEndDate);
-}
-
-function formatDateForQuery(d) {
-    let date = new Date(d);
-    return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T23:59:59Z';
 }
 
 function sortPlacesByRating(locations) {
@@ -496,6 +558,40 @@ function deg2rad(deg) {
 
 function convertKmToMi(km) {
     return (1/0.621371) * km;
+}
+
+function getEndDate() {
+    let today = new Date();
+    let searchEndDate = today.setMonth(today.getMonth() + 2);
+    return formatDateForQuery(searchEndDate, false);
+}
+
+function getStartDate() {
+    let today = new Date();
+    let searchStartDate = today.setMonth(today.getMonth() + 1);
+    return formatDateForQuery(searchStartDate, true);
+}
+
+function formatDateForQuery(d, start) {
+    let date = new Date(d);
+    let result = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+
+    if (start) {
+        result += 'T00:00:00Z';
+    } else {
+        result += 'T23:59:59Z';
+    }
+    
+    return result;
+}
+
+function formatDate(d) {
+    let date = new Date(d);
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    let year = date.getFullYear();
+
+    return month + '/' + day + '/' + year;
 }
 
 function formatTime(timeString) {
