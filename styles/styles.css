@@ -15,7 +15,8 @@ html {
 
 html,
 body {
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
     width: 100%;
     font-size: 18px;
     
@@ -157,13 +158,16 @@ body {
 
 #section3 {
     height:100vh;
-    background: lightgoldenrodyellow
+    background: lightgoldenrodyellow;
+    background-image:url("http://www.mycoolbackgrounds.com/backgrounds/19629/Night%20Skyline,%20Atlanta,%20Georgia.jpg");
+    background-size: 100%;
 }
 
 #section4{
     height:100vh;
     background: lightpink; 
 }
+
 
 .container1 {
         position: absolute;
@@ -205,3 +209,13 @@ h4 {
     font-size: 1.4rem;
     font-weight: bold;
 }
+
+#map {
+    padding-top: 50px;
+    height: 500px;
+    width:300px;
+    position: sticky;
+    top:100px;
+    left:75px;
+    align-self: center;
+ }

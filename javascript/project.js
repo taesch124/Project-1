@@ -26,40 +26,26 @@ searchRadius = searchRadiusMin;
 var currentLocation;
 var chosenEvent;
 var chosenBar;
+var test= 0
 
 document.addEventListener('DOMContentLoaded', function() {
     $('select').formSelect();
     searchForm.addEventListener('submit', submitHandler);
     startOverButton.addEventListener('click', startOver);
     $("#search-button").on('click ', findEvents);
-    $('#search-button').on('click', unbindthis);
+    // $('#search-button').on('click', unbindthis);
     $(document).on('click', '.select-event-link', selectEvent);
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
-    bindThis();
-    $("#clicker").on("click", unbindthis);
-    // $("#clicker").on("click", bindThisto);
-    document.getElementById('section1').scrollIntoView();
+    
+    // $("#clicker").on("click", unbindthis);
+    // document.getElementById('section1').scrollIntoView();
 });
 
-function bindThis (){
-    $('body').css({'overflow':'hidden'});
-    $(document).bind('scroll',function () { 
-        window.scrollTo(0,0); 
-    });
-}
-     
-function unbindthis() {
-    $(document).unbind('scroll'); 
-    $('body').css({'overflow':'visible'});
-}
 
-// function bindThisto (){
-//     $('body').css({'overflow':'hidden'});
-//     $(document).bind('scroll',function () { 
-//         window.scrollTo(sectionOne); 
-//     });
-// }
-
+$("#clicker").on("click", function(){
+    $("body").css({"overflow":"visible"})
+    console.log("Button Clicked")
+})
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
