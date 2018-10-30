@@ -6,7 +6,6 @@ var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
 var sectionOne = document.getElementById('section1');
 var startOverButton = document.getElementById('start-over');
-var mapDiv = document.querySelector('.map-container');
 var mapElement = document.getElementById('map');
 
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
@@ -171,6 +170,7 @@ function populateLocations(locations) {
         resultsListDiv.appendChild(card);
         createMapMarker(current, card, 'place');
     }
+    resultsListDiv.scrollTo(0,0);
 }
 
 function populateUserChoices() {
@@ -182,7 +182,6 @@ function populateUserChoices() {
     resultsListDiv.classList.add('m12');
     resultsListDiv.classList.remove('cards-container');
     resultsListDiv.classList.add('details-container');
-    mapDiv.classList.add('hidden');
     mapElement.classList.add('hidden');
 
     let eventHeader = document.createElement('h3');
@@ -420,7 +419,6 @@ function startOver() {
         resultsListDiv.classList.add('m6');
         resultsListDiv.classList.remove('details-container');
         resultsListDiv.classList.add('cards-container');
-        mapDiv.classList.remove('hidden');
         mapElement.classList.remove('hidden');
     }
 }
