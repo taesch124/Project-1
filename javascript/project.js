@@ -172,7 +172,7 @@ function getGooglePlacesAroundEventVenue(location) {
     })
 }
 
-function populateEvents(events) {
+async function populateEvents(events) {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
@@ -187,11 +187,12 @@ function populateEvents(events) {
 
         let place = createPlaceFromEventVenue(venue);
         codeAddress(geocoder, place, card);
+        await sleep(100);
     }  
     setMapBounds(venueMarkers);
 }
 
-function populateLocations(locations) {
+async function populateLocations(locations) {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
@@ -203,17 +204,15 @@ function populateLocations(locations) {
 
         resultsListDiv.appendChild(card);
         createMapMarker(current, card, 'place');
+        await sleep(100);
     }
     resultsListDiv.scrollTo(0,0);
 }
 
-function populateUserChoices() {
+async function populateUserChoices() {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
-
-    console.log(chosenEvent);
-    console.log(chosenBar);
 
     resultsListDiv.classList.remove('m6');
     resultsListDiv.classList.add('m12');
@@ -232,6 +231,8 @@ function populateUserChoices() {
     let placeHeader = document.createElement('h3');
     placeHeader.textContent = 'After';
     resultsListDiv.appendChild(placeHeader);
+
+    await sleep(500);
 
     let barCard = createPlaceCard(chosenBar, true);
     resultsListDiv.appendChild(barCard);
@@ -656,4 +657,8 @@ function formatTime(timeString) {
     }
 
     return hour + ':' + parts[1] + ' ' + dayPart;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
