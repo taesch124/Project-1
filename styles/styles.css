@@ -62,6 +62,7 @@ body {
 
 .card {
     margin: .5rem;
+    animation: fade-in 1s ease-in;
 }
 
 .result {
@@ -199,6 +200,18 @@ body {
     overflow: hidden;
 }
 
+#date-select {
+    height: 100%;
+    width: 100%;
+    position: relative;
+} 
+
+.datepicker-modal {
+    position: absolute;
+    top: 50% !important;
+    transform: scaleX(1) scaleY(1) translate(0, -50%) !important;
+}  
+
 /*
 ===============================================
 Typography
@@ -250,4 +263,24 @@ Scroll Bar
 }
 ::-webkit-scrollbar-thumb:window-inactive {
 	background: rgba(255,0,0,0.4); 
+}
+
+
+
+
+ /*
+===============================================
+Animation
+===============================================
+*/
+
+@keyframes fade-in {
+	0% {
+        opacity: 0;
+        transform: translate(-50px, -50px);
+	}
+	100% {
+        opacity: 1;
+        transform: translate(0, 0);
+	}
 }
