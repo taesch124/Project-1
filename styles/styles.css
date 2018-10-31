@@ -177,8 +177,7 @@ body {
 
 #section4{
     height:100vh;
-    background: gainsboro; 
-    background-image: url("https://www.transparenttextures.com/patterns/clean-textile.png")
+    background-image: url("https://www.transparenttextures.com/patterns/beige-paper.png"); 
 }
 
 
@@ -297,11 +296,11 @@ Scroll Bar
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: rgba(255,0,0,0.8); 
+    background:  #d69b8a;; 
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(255,0,0,0.4); 
+	background: #ebcdc5;; 
 }
 
 
