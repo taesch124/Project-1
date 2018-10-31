@@ -1,12 +1,19 @@
 var mainContainderDiv = document.getElementById('main-container');
 var resultsListDiv = document.getElementById('results-list');
+
 var searchForm = document.getElementById('search-form');
 var searchButton = document.getElementById('search-button');
+
 var stateSelect = document.getElementById('state-select');
 var citySearch = document.getElementById('city-search');
-var sectionOne = document.getElementById('section1');
 var startOverButton = document.getElementById('start-over');
+
+var sectionOne = document.getElementById('section1');
 var mapElement = document.getElementById('map');
+
+var dateSelectDiv = document.getElementById('date-select');
+var startDatePicker = document.getElementById('start-date-picker');
+var endDatePicker = document.getElementById('end-date-picker');
 
 var geocoderUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
@@ -19,6 +26,9 @@ var eventListings;
 var placeListings;
 var placeMarkers = [];
 var venueMarkers = [];
+
+var startDate;
+var endDate;
 var searchRadiusMin = 2000,
 searchRadius = searchRadiusMin;
 
@@ -32,19 +42,32 @@ document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
     startOverButton.addEventListener('click', startOver);
     $("#search-button").on('click ', findEvents);
-    // $('#search-button').on('click', unbindthis);
     $(document).on('click', '.select-event-link', selectEvent);
     $(document).on('click', '.select-place-link', getChosenPlaceDetails);
-    
-    // $("#clicker").on("click", unbindthis);
-    // document.getElementById('section1').scrollIntoView();
+
+    startDate = getStartDate();
+    endDate = getEndDate();
+    let options = M.Datepicker;
+    options.minDate = new Date();
+    options.format = ('mm/dd/yyyy');
+    options.onSelect = parsePickerDate;
+    options.container = dateSelectDiv;
+    //options.onClose = setBodyOverFlow;
+    startDatePicker = M.Datepicker.init(startDatePicker, options);
+    endDatePicker = M.Datepicker.init(endDatePicker, options); 
+    console.log(startDatePicker);
 });
 
 
-$("#clicker").on("click", function(){
+$(".clicker").on("click", function(){
     $("body").css({"overflow":"visible"})
-    console.log("Button Clicked")
-})
+});
+
+function setBodyOverFlow() {
+    setTimeout(() => {
+        $("body").css({"overflow":"visible"});
+    }, 250);
+}
 
 function submitHandler(submitEvent) {
     submitEvent.preventDefault();
@@ -58,8 +81,6 @@ function findEvents(event) {
     var keyword = $("#event-search").val(). trim();
     var cityInput = $("#city-search").val(). trim();
     var stateInput = $('#state-select').val().trim();
-    let startDate = getStartDate();
-    let endDate = getEndDate();
     
     if(cityInput) {
         url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
@@ -80,6 +101,7 @@ function findEvents(event) {
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
     console.log(url);
+    document.getElementById('section4').scrollIntoView();
 
     $.ajax({
         url: url,
@@ -87,7 +109,6 @@ function findEvents(event) {
         async:true,
         dataType: "json",
     }).done(function(result) {
-        document.getElementById('section3').scrollIntoView();
         if(!result._embedded) {
             populateNoResultsMessage();
             return;
@@ -177,6 +198,9 @@ function populateUserChoices() {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
+
+    console.log(chosenEvent);
+    console.log(chosenBar);
 
     resultsListDiv.classList.remove('m6');
     resultsListDiv.classList.add('m12');
@@ -282,7 +306,7 @@ function createEventCard(event, venue, chosen) {
     if(event.dates) {
         let dateDiv = document.createElement('p');
         dateDiv.setAttribute("data-name",event.dates.start.localDate);
-        dateDiv.textContent = formatDate(event.dates.start.localDate);
+        dateDiv.textContent = event.dates.start.localDate;
         detailsDiv.appendChild(dateDiv);
     }
 
@@ -297,18 +321,19 @@ function createEventCard(event, venue, chosen) {
 
         container.classList.add('result');
     } else {
-        if (event.priceRanges) {
-            let usdRange = event.priceRanges.filter(range => range.currency === 'USD')[0];
-            let priceRange = document.createElement('p');
-            priceRange.textContent = '$' + usdRange.min + ' - $' + usdRange.max;
-            detailsDiv.appendChild(priceRange);
-        }
 
         if(event.dates) {
             let timeDiv = document.createElement('p');
             timeDiv.setAttribute("data-name",event.dates.start.localTime);
             timeDiv.textContent = formatTime(event.dates.start.localTime);
             detailsDiv.appendChild(timeDiv);
+        }
+
+        if (event.priceRanges) {
+            let usdRange = event.priceRanges.filter(range => range.currency === 'USD')[0];
+            let priceRange = document.createElement('p');
+            priceRange.textContent = '$' + usdRange.min + ' - $' + usdRange.max;
+            detailsDiv.appendChild(priceRange);
         }
 
         detailsDiv.appendChild(document.createElement('br'));
@@ -397,7 +422,6 @@ function getChosenPlaceDetails(event) {
     }, function(place, status) {
         if(status === google.maps.places.PlacesServiceStatus.OK) {
             chosenBar = place;
-            console.log(chosenBar);
             populateUserChoices();
         } else {
             console.error('Could not find place. ' + status);
@@ -558,6 +582,21 @@ function convertKmToMi(km) {
     return (1/0.621371) * km;
 }
 
+function parsePickerDate() {
+    let pickerDate = new Date(this.date);
+    let pickerId = this.$el[0].id;
+
+    if(pickerId === 'start-date-picker') {
+        startDate = formatDateForQuery(pickerDate, true);
+        endDatePicker.options.defaultDate = pickerDate;
+        endDatePicker.options.minDate = pickerDate;
+        console.log(startDate);
+    } else {
+        endDate = formatDateForQuery(pickerDate, false);
+        console.log(endDate);
+    }
+}
+
 function getEndDate() {
     let today = new Date();
     let searchEndDate = today.setMonth(today.getMonth() + 2);
@@ -566,16 +605,16 @@ function getEndDate() {
 
 function getStartDate() {
     let today = new Date();
-    let searchStartDate = today.setMonth(today.getMonth() + 1);
+    let searchStartDate = today.setMonth(today.getMonth() );
     return formatDateForQuery(searchStartDate, true);
 }
 
 function formatDateForQuery(d, start) {
     let date = new Date(d);
-    let result = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+    let result = date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
 
     if (start) {
-        result += 'T00:00:00Z';
+        result += 'T05:00:00Z';
     } else {
         result += 'T23:59:59Z';
     }
@@ -584,10 +623,10 @@ function formatDateForQuery(d, start) {
 }
 
 function formatDate(d) {
-    let date = new Date(d);
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-    let year = date.getFullYear();
+    let dateParts = d.split('-');
+    let month = dateParts[1];
+    let day = dateParts[2];
+    let year = dateParts[0];
 
     return month + '/' + day + '/' + year;
 }
