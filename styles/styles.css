@@ -61,7 +61,7 @@ body {
 }
 
 .card {
-    margin: .5rem;
+    margin: 2rem;
     animation: fade-in 1s ease-in;
 }
 
