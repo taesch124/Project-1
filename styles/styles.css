@@ -149,6 +149,7 @@ body {
 #section2 {
     height:100vh;
     background: lightsteelblue;
+    background-image: url("https://www.transparenttextures.com/patterns/clean-textile.png")
 }
 
 .noideatext {
@@ -159,14 +160,19 @@ body {
 
 #section3 {
     height:100vh;
-    background: lightgoldenrodyellow;
-    background-image:url("http://www.mycoolbackgrounds.com/backgrounds/19629/Night%20Skyline,%20Atlanta,%20Georgia.jpg");
-    background-size: 100%;
+    
+    background: lightblue;
+    background-image: url("https://www.transparenttextures.com/patterns/beige-paper.png")
+    /* background-image:url("http://www.mycoolbackgrounds.com/backgrounds/19629/Night%20Skyline,%20Atlanta,%20Georgia.jpg"); */
+    /* background-size: 100%; */
+    /* opacity: 0x; */
+    
 }
 
 #section4{
     height:100vh;
-    background: lightpink; 
+    background: gainsboro; 
+    background-image: url("https://www.transparenttextures.com/patterns/clean-textile.png")
 }
 
 
