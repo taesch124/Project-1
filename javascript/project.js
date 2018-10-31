@@ -59,9 +59,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-$(".clicker").on("click", function(){
+$("#clicker").on("click", function(){
     $("body").css({"overflow":"visible"})
-});
+    $(".line").css({
+        'position': 'relative',
+        'top': '50%', 
+        'margin': '0 auto',  
+        'border-right': '2px solid rgba(255,255,255, 0.75)', 
+        'font-size': '40px',  
+        'white-space': 'nowrap', 
+        'overflow': 'hidden', 'transform': 'translateY(-50%)'
+    })
+    $(".anim-typewriter").css({
+        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
+    })
+    console.log("Button Clicked")
+})
 
 function setBodyOverFlow() {
     setTimeout(() => {

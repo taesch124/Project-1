@@ -212,6 +212,24 @@ body {
     transform: scaleX(1) scaleY(1) translate(0, -50%) !important;
 }  
 
+@keyframes typewriter {
+    from {
+        width: 0;   
+    }
+    to {
+        width: 15em; 
+    }
+}
+
+@keyframes blinkTextCursor {
+    from {
+        border-right-color: rgba(255,255,255, 0.75)
+        }
+    to {
+        border-right-color: transparent;
+    }
+}
+
 /*
 ===============================================
 Typography
