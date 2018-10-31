@@ -132,6 +132,12 @@ body {
 
 }
 
+.finalpage { */
+ text-align: center;
+ font-family: 'Vidaloka', serif;
+ font-size: 40px;
+}
+
 
 #section1 {
     height:100vh;
@@ -235,6 +241,15 @@ body {
         border-right-color: transparent;
     }
 }
+
+
+
+#results-list {
+    padding-top: 83.5px; 
+    padding-left: 30px;
+}
+
+
 
 /*
 ===============================================
