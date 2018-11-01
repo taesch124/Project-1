@@ -254,8 +254,13 @@ body {
     }
 }
 
+
+.card-title {
+    text-shadow: 1.5px 1.5px gray;
+}
 .results-container {
     width: 90%;
+
 }
 
 #results-message {
@@ -276,7 +281,30 @@ body {
 .card {
     background-color:lightgray;
 }
+.card:hover {
+    background-color:gray;
+    box-shadow: 5px 5px lightgray;
+}
 
+.date-div {
+    font-size: small;
+}
+
+.rating-color {
+    color: yellow;
+}
+
+#title1{
+    text-shadow: 1.5px 1.5px gray;
+}
+
+#results-list {
+    text-align: center;
+}
+
+h3 {
+    text-shadow: 2px 2px gray;
+}
 /*
 ===============================================
 Typography
@@ -300,6 +328,7 @@ h3 {
     top:100px;
     left:75px;
     align-self: center;
+    box-shadow: 5px 5px rgb(150, 144, 144);
  }
 
 

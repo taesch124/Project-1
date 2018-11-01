@@ -368,6 +368,7 @@ function createEventCard(event, venue, chosen) {
         dateDiv.setAttribute("data-name",event.dates.start.localDate);
         dateDiv.textContent = event.dates.start.localDate;
         detailsDiv.appendChild(dateDiv);
+        dateDiv.classList.add('date-div')
     }
 
     if(!chosen) {
@@ -437,7 +438,10 @@ function createPlaceCard(current, chosen) {
         let rating = document.createElement('p');
         rating.textContent = 'Rated: ' + current.rating;
         detailsDiv.appendChild(rating);
+        rating.classList.add('rating-color')
+
     }
+  
 
     let address = document.createElement('p');
     address.textContent = current.vicinity;
