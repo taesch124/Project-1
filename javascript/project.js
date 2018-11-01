@@ -52,14 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
     options.format = ('mm/dd/yyyy');
     options.onSelect = parsePickerDate;
     options.container = dateSelectDiv;
-    //options.onClose = setBodyOverFlow;
+    
     startDatePicker = M.Datepicker.init(startDatePicker, options);
     endDatePicker = M.Datepicker.init(endDatePicker, options); 
     console.log(startDatePicker);
+
+    $("#clicker").on("click", button0); 
+    $("#clicker1").on("click", button1); 
+    $("#clicker2").on("click", button2); 
 });
 
-
-$("#clicker").on("click", function(){
+function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
         'position': 'relative',
@@ -73,12 +76,17 @@ $("#clicker").on("click", function(){
     $(".anim-typewriter").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
-})
+  
+}
 
+function button1(){
+    $("html").addClass('auto-scroll');
+    $("body").css({"overflow":"visible"});
+    window.location = '#section1';
+    $('html').removeClass('auto-scroll');
+    
+    document.getElementById('section2').scrollIntoView();
 
-$("#clicker1").on("click", function(){
-    $("body").css({"overflow":"visible"})
     $(".line1").css({
         'position': 'relative',
         'top': '50%', 
@@ -91,10 +99,10 @@ $("#clicker1").on("click", function(){
     $(".anim-typewriter1").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
-})
+    
+}
 
-$("#clicker2").on("click", function(){
+function button2(){
     $("body").css({"overflow":"visible"})
     $(".line2").css({
         'position': 'relative',
@@ -108,23 +116,8 @@ $("#clicker2").on("click", function(){
     $(".anim-typewriter2").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
+}
 
 function setBodyOverFlow() {
     setTimeout(() => {
@@ -163,7 +156,7 @@ function findEvents(event) {
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
-    console.log(url);
+    
     document.getElementById('section4').scrollIntoView();
 
     $.ajax({
@@ -212,7 +205,6 @@ function getGooglePlacesAroundEventVenue(location) {
         if (status == google.maps.places.PlacesServiceStatus.OK && results.length >= 6) {
             placeMarkers = [];
             populateLocations(results);
-            setMapBounds(placeMarkers);
         } else if(status == google.maps.places.PlacesServiceStatus.OK && results.length < 6) {
             searchRadius+= 2000;
             getGooglePlacesAroundEventVenue(location);
@@ -256,6 +248,7 @@ async function populateLocations(locations) {
         createMapMarker(current, card, 'place');
         await sleep(100);
     }
+    setMapBounds(placeMarkers);
     resultsListDiv.scrollTo(0,0);
 }
 
@@ -264,14 +257,12 @@ async function populateUserChoices() {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
 
-    console.log(chosenEvent);
-    console.log(chosenBar);
-
     resultsListDiv.classList.remove('m6');
     resultsListDiv.classList.add('m12');
     resultsListDiv.classList.remove('cards-container');
     resultsListDiv.classList.add('details-container');
     mapElement.classList.add('hidden');
+    $('#results-message').addClass('hidden');
 
     let eventHeader = document.createElement('h3');
     eventHeader.textContent = 'Event';
@@ -279,6 +270,7 @@ async function populateUserChoices() {
 
     let eventCard = createEventCard(chosenEvent, chosenEvent._embedded.venues[0], true);
     eventCard.classList.add('horizontal');
+    eventCard.classList.add('result-card');
     resultsListDiv.appendChild(eventCard);
 
     let placeHeader = document.createElement('h3');
@@ -288,6 +280,7 @@ async function populateUserChoices() {
     await sleep(500);
 
     let barCard = createPlaceCard(chosenBar, true);
+    barCard.classList.add('result-card');
     resultsListDiv.appendChild(barCard);
 }
 
@@ -515,6 +508,7 @@ function startOver() {
         resultsListDiv.classList.remove('details-container');
         resultsListDiv.classList.add('cards-container');
         mapElement.classList.remove('hidden');
+        $('#results-message').removeClass('hidden');
     }
 }
 

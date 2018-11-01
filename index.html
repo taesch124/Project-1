@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Project-1</title>
   
   <link rel="stylesheet" type="text/css" href="styles/reset.css">
@@ -20,7 +21,7 @@
 </head>
 <body>
 <section id="section0">
-<div id="overlay0">
+<div class="container" id="overlay0">
   <div class="col s12 m2">
  <p class="nightout" id="title1"> N i g h t         O u t <img src="if_traveling_icon_flat_outline-10_3405123.png"width="42" height="42"> </p>
 
@@ -41,22 +42,21 @@
       <p class="nightout line anim-typewriter">when's the big night out?</p>
       </div>
     <div class="container" class="container2">
-      <div class="row section1-content">
-        <div class="container" id=search-form>
-          <div class="row">
-            <div class="col m6">
-              <input class="datepicker" type="text" id="start-date-picker">
+
+      <div class="row section1-content search-form">
+            <div class="col s6">
+              <input placeholder="Start Date" class="datepicker" type="text" id="start-date-picker">
             </div>
-            <div class="col m6">
-              <input class="datepicker" type="text" id="end-date-picker">
+            <div class="col s6">
+              <input placeholder="End Date" class="datepicker" type="text" id="end-date-picker">
             </div>
-          </div>
-          <div class="row">
-              <a href="#section2" id="clicker1" class="clicker1 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Next</a>
-          </div>
-        </div>
+      </div>
+
+      <div class="row">
+        <a id="clicker1" class="clicker1 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Next</a>
       </div>
     </div>
+    
   </div>
 </section>
 
@@ -123,10 +123,10 @@
           </select>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <a href="#section3" id="clicker2" class="clicker2 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Next</a>
+      <div class="row">
+        <a href="#section3" id="clicker2" class="clicker2 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Next</a>
+      </div>
     </div>
   </section>
 
@@ -140,17 +140,17 @@
         <div class="row">
             <input placeholder="the world is your oyster" class="input-field col s-12" type="text" id="event-search">
         </div>
-        <div class="row">
-            <a href="#section4" id="search-button" class="clicker3 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Search</a>
-        </div>
       </div>
     </div>
-  </div>
+
     <div class="row">
-  <div class="col s12">
+        <a href="#section4" id="search-button" class="clicker3 button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Search</a>
+      </div>
+  </div>
+  
+  <div class="row">
       <p class="noideatext"> no idea what you want to do? That's okay. We've got you. Just click next to see what's happening in your area!</p>
-     </div>
-    </div>
+  </div>
 </section>
 
 
@@ -158,29 +158,28 @@
 
 <section id ="section4">
 
-  <div class="container">
-    <div class="row">
-    <div class="col m7">
-        <p class="finalpage"> hmm what do you want to see...</p>
-       </div>
-<div class="cold m1"></div>
-    <div class="col m4 finalpage"> location is key! </div>
-  </div>
-</div>
-    <div class="container3" class="container" id="main-container">
+  <div class="results-container container3 container" id="main-container">
 
-      <div class="row">
-          <div class="col m8 cards-container" id="results-list"></div>
- 
-          <div class="col m4" id="map"></div>
-      </div>
-
-       <div class="row">
-        <a href="#section1" id="start-over" class="clicker button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Start Over</a>
-      </div>
-
+    <div class="row" id="results-message">
+      <div class="col m7">
+          <p class="finalpage"> hmm what do you want to see...</p>
+          </div>
+      <div class="col m1"></div>
+      <div class="col m4 finalpage"> location is key! </div>
     </div>
-  </section>
+
+    <div class="row">
+        <div class="col m8 cards-container" id="results-list"></div>
+
+        <div class="col m4" id="map"></div>
+    </div>
+
+    <div class="row">
+      <a href="#section1" id="start-over" class="clicker button col s4 offset-s4 waves-effect waves-light #f5f5f5 grey lighten-4 btn text-color z-depth-5">Start Over</a>
+    </div>
+
+  </div>
+</section>
 
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjJFcjKjMd0R2E2kYIBRp798OQtUwm4ik&callback=initMap&libraries=places" async></script>
