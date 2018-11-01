@@ -56,10 +56,13 @@ document.addEventListener('DOMContentLoaded', function() {
     startDatePicker = M.Datepicker.init(startDatePicker, options);
     endDatePicker = M.Datepicker.init(endDatePicker, options); 
     console.log(startDatePicker);
+
+    $("#clicker").on("click", button0); 
+    $("#clicker1").on("click", button1); 
+    $("#clicker2").on("click", button2); 
 });
 
-
-$("#clicker").on("click", function(){
+function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
         'position': 'relative',
@@ -74,10 +77,9 @@ $("#clicker").on("click", function(){
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
     console.log("Button Clicked")
-})
+}
 
-
-$("#clicker1").on("click", function(){
+function button1(){
     $("body").css({"overflow":"visible"})
     $(".line1").css({
         'position': 'relative',
@@ -92,9 +94,9 @@ $("#clicker1").on("click", function(){
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
     console.log("Button Clicked")
-})
+}
 
-$("#clicker2").on("click", function(){
+function button2(){
     $("body").css({"overflow":"visible"})
     $(".line2").css({
         'position': 'relative',
@@ -109,18 +111,7 @@ $("#clicker2").on("click", function(){
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
     console.log("Button Clicked")
-})
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 
