@@ -92,6 +92,7 @@ body {
 }
 
 .event-location {
+    font-size: small;
     color: blue;
 }
 
@@ -183,6 +184,10 @@ body {
     
 }
 
+.card a, .card-details{
+    text-align: center;
+}
+
 #section4{
     height:100vh;
     background-image: url("https://www.transparenttextures.com/patterns/beige-paper.png"); 
@@ -267,6 +272,10 @@ body {
     color: white;
 }
 
+
+.card {
+    background-color:lightgray;
+}
 
 /*
 ===============================================
