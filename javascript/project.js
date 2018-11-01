@@ -366,7 +366,7 @@ function createEventCard(event, venue, chosen) {
     if(event.dates) {
         let dateDiv = document.createElement('p');
         dateDiv.setAttribute("data-name",event.dates.start.localDate);
-        dateDiv.textContent = event.dates.start.localDate;
+        dateDiv.textContent = formatDate(event.dates.start.localDate);
         detailsDiv.appendChild(dateDiv);
         dateDiv.classList.add('date-div')
     }
