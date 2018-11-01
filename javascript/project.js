@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     options.format = ('mm/dd/yyyy');
     options.onSelect = parsePickerDate;
     options.container = dateSelectDiv;
-    //options.onClose = setBodyOverFlow;
+    
     startDatePicker = M.Datepicker.init(startDatePicker, options);
     endDatePicker = M.Datepicker.init(endDatePicker, options); 
     console.log(startDatePicker);
@@ -76,7 +76,7 @@ function button0() {
     $(".anim-typewriter").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
+  
 }
 
 function button1(){
@@ -93,7 +93,7 @@ function button1(){
     $(".anim-typewriter1").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
+    
 }
 
 function button2(){
@@ -110,7 +110,7 @@ function button2(){
     $(".anim-typewriter2").css({
         'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
-    console.log("Button Clicked")
+  
 }
 
 
@@ -154,7 +154,7 @@ function findEvents(event) {
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
-    console.log(url);
+    
     document.getElementById('section4').scrollIntoView();
 
     $.ajax({
@@ -254,9 +254,6 @@ async function populateUserChoices() {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
-
-    console.log(chosenEvent);
-    console.log(chosenBar);
 
     resultsListDiv.classList.remove('m6');
     resultsListDiv.classList.add('m12');
