@@ -12,6 +12,10 @@ html {
     scroll-behavior: smooth;
 }
 
+.auto-scroll {
+    scroll-behavior: auto;
+}
+
 
 html,
 body {
@@ -63,6 +67,10 @@ body {
 .card {
     margin: 2rem;
     animation: fade-in 1s ease-in;
+}
+
+.result-card {
+    margin: 0;
 }
 
 .result {
@@ -246,12 +254,24 @@ body {
     }
 }
 
+.results-container {
+    width: 90%;
+}
 
+#results-message {
+    margin-bottom: 0;
+}
 
 #results-list {
-    padding-top: 83.5px; 
+    margin-top: 3rem;
     padding-left: 30px;
+    max-height: 75%;
 }
+
+::placeholder {
+    color: white;
+}
+
 
 .card {
     background-color:lightgray;
@@ -266,6 +286,10 @@ Typography
 h4 {
     font-size: 1.4rem;
     font-weight: bold;
+}
+
+h3 {
+    margin: 0 0 1rem 0;
 }
 
 #map {

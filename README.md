@@ -1,35 +1,33 @@
 # Project-1
 
+### Online Demo
+You can test the website at https://taesch124.github.io/Project-1/. Just follow the prompts on the web page.
+
+![](./images/results-screenshot.jpg)
+
 ### APIs
 
-Luco API for restaurants and their menus
--Dan
+TicketMaster API was used to find events based on criteria provided by the user around dates, a location, and a search keyword. The data retrieved is provided to the user to make getting tickets and information about it easy.
 
-Edamam/Recipe/Spponacular for recipes/ingrediants for meals
--Leigh
 
-### Front End
+Google Maps API was used to show the events on a map, and when on is chosen to show all bars around that event's venue. Available information is provided to the user to call or visit their site to plan their night out.
 
-Materialize/Bootstrap
--Izzy/Anthony 
+### Technology Used
+
+HTML/CSS, Javascript, jQuery, Materialize library
 
 
 ### App Flow
 
-User enters food category/location to find restaurants -> Tacos in Jersey City
+User enters start and end date for range of when they would like to go out.
 
-On restaurant selection provide menu items w/price as well as information about making recpie/recipe themselves -> Tacqueria w/ menu items
+User enters a city/state that the user would like to go out to.
 
-User clicks on what they would like to eat and it opens a new page/new module that shows menu item and price, with recipe and ingredient price below/beside
+User enters search keyword for the ticketmaster API to narrow the results of the other parameters.
 
-Beef Tacos - $12
+Site shows all events given the user's inputs and shows venues for them on a map. User then will select an event he/she wants to go to.
 
-Recipe - ~$10
-1/4 ground beef - $2.25
-tortilla shells - $1.25
-...
+Site will provide a list of bars in the area around the event's venue. Locations will also have markers for them appear on the map. User then selects a bar to go to either before or after the event.
 
-Comparison on bottom of the price and potentially healthyness
-
-AKA "You will save $2.74 if made at home"
+Site provides additional information for tickets or reaching out to bar to make reservations if required.
 
