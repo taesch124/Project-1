@@ -78,7 +78,12 @@ $("#clicker").on("click", function(){
 
 
 $("#clicker1").on("click", function(){
-    $("body").css({"overflow":"visible"})
+    $("html").addClass('auto-scroll');
+    $("body").css({"overflow":"visible"});
+    window.location = '#section1';
+    $('html').removeClass('auto-scroll');
+    
+    document.getElementById('section2').scrollIntoView();
     $(".line1").css({
         'position': 'relative',
         'top': '50%', 
@@ -110,21 +115,6 @@ $("#clicker2").on("click", function(){
     })
     console.log("Button Clicked")
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function setBodyOverFlow() {
     setTimeout(() => {
@@ -212,7 +202,6 @@ function getGooglePlacesAroundEventVenue(location) {
         if (status == google.maps.places.PlacesServiceStatus.OK && results.length >= 6) {
             placeMarkers = [];
             populateLocations(results);
-            setMapBounds(placeMarkers);
         } else if(status == google.maps.places.PlacesServiceStatus.OK && results.length < 6) {
             searchRadius+= 2000;
             getGooglePlacesAroundEventVenue(location);
@@ -256,6 +245,7 @@ async function populateLocations(locations) {
         createMapMarker(current, card, 'place');
         await sleep(100);
     }
+    setMapBounds(placeMarkers);
     resultsListDiv.scrollTo(0,0);
 }
 
@@ -272,6 +262,7 @@ async function populateUserChoices() {
     resultsListDiv.classList.remove('cards-container');
     resultsListDiv.classList.add('details-container');
     mapElement.classList.add('hidden');
+    $('#results-message').addClass('hidden');
 
     let eventHeader = document.createElement('h3');
     eventHeader.textContent = 'Event';
@@ -279,6 +270,7 @@ async function populateUserChoices() {
 
     let eventCard = createEventCard(chosenEvent, chosenEvent._embedded.venues[0], true);
     eventCard.classList.add('horizontal');
+    eventCard.classList.add('result-card');
     resultsListDiv.appendChild(eventCard);
 
     let placeHeader = document.createElement('h3');
@@ -288,6 +280,7 @@ async function populateUserChoices() {
     await sleep(500);
 
     let barCard = createPlaceCard(chosenBar, true);
+    barCard.classList.add('result-card');
     resultsListDiv.appendChild(barCard);
 }
 
@@ -511,6 +504,7 @@ function startOver() {
         resultsListDiv.classList.remove('details-container');
         resultsListDiv.classList.add('cards-container');
         mapElement.classList.remove('hidden');
+        $('#results-message').removeClass('hidden');
     }
 }
 
