@@ -46,7 +46,7 @@ body {
     justify-content: center;
     overflow-y: scroll;
     overflow-x: none;
-    max-height: 90%;
+    max-height: 80%;
 }
 
 .details-container {
@@ -89,6 +89,7 @@ body {
     height: auto;
     max-height: 280px;
     align-self: center;
+    object-fit: cover;
 }
 
 .event-location {
@@ -184,7 +185,8 @@ body {
     
 }
 
-.card a, .card-details{
+.card a, 
+.card-details{
     text-align: center;
 }
 
@@ -267,12 +269,6 @@ body {
     margin-bottom: 0;
 }
 
-#results-list {
-    margin-top: 3rem;
-    padding-left: 30px;
-    max-height: 75%;
-}
-
 ::placeholder {
     color: white;
 }
@@ -305,6 +301,11 @@ body {
 h3 {
     text-shadow: 2px 2px gray;
 }
+
+.details-container .result-card:hover {
+    background-color:lightgray;
+}
+
 /*
 ===============================================
 Typography
@@ -381,4 +382,47 @@ Animation
         opacity: 1;
         transform: translate(0, 0);
 	}
+}
+
+
+
+
+ /*
+===============================================
+Media Queries
+===============================================
+*/
+
+@media only screen and (max-width: 600px) {
+
+    .finalpage {
+        font-size: 1.1rem;
+    }
+
+    .cards-container {
+        margin-top: 1.5rem;
+        height: 55%;
+        max-height: 55%;
+    }
+
+    .event-image {
+        max-height: 180px;
+    }
+
+    #map {
+        height: 180px;
+        width: 100%;
+        top: .3rem;
+        left: 0;
+    }
+
+    .details-container {
+        max-height: 80%;
+    }
+
+    .horizontal img {
+        max-height: 120px;
+        max-width: 120px;
+    }
+    
 }

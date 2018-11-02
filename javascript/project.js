@@ -42,8 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
     searchForm.addEventListener('submit', submitHandler);
     startOverButton.addEventListener('click', startOver);
     $("#search-button").on('click ', findEvents);
-    $(document).on('click', '.select-event-link', selectEvent);
-    $(document).on('click', '.select-place-link', getChosenPlaceDetails);
 
     startDate = getStartDate();
     endDate = getEndDate();
@@ -54,19 +52,14 @@ document.addEventListener('DOMContentLoaded', function() {
     options.container = dateSelectDiv;
     
     startDatePicker = M.Datepicker.init(startDatePicker, options);
-    endDatePicker = M.Datepicker.init(endDatePicker, options); 
-    console.log(startDatePicker);
+    endDatePicker = M.Datepicker.init(endDatePicker, options);
 
     $("#clicker").on("click", button0); 
     $("#clicker1").on("click", button1); 
     $("#clicker2").on("click", button2); 
 });
 
-<<<<<<< HEAD
-$(".clicker").on("click", function(){
-=======
 function button0() {
->>>>>>> 5ef43f2504afcc85d158aef75e1ae7734474c1a1
     $("body").css({"overflow":"visible"})
     $(".line").css({
         'overflow': 'hidden', 'transform': 'translateY(-50%)',
@@ -165,6 +158,7 @@ function findEvents(event) {
     }
     
     document.getElementById('section4').scrollIntoView();
+    console.log(url);
 
     $.ajax({
         url: url,
@@ -238,7 +232,9 @@ async function populateEvents(events) {
         codeAddress(geocoder, place, card);
         await sleep(100);
     }  
+
     setMapBounds(venueMarkers);
+    $(document).on('click', '.select-event-link', selectEvent);
 }
 
 async function populateLocations(locations) {
@@ -257,6 +253,7 @@ async function populateLocations(locations) {
     }
     setMapBounds(placeMarkers);
     resultsListDiv.scrollTo(0,0);
+    $(document).on('click', '.select-place-link', getChosenPlaceDetails);
 }
 
 async function populateUserChoices() {
@@ -471,7 +468,7 @@ function createPlaceCard(current, chosen) {
 
         if(current.website) {
             let website = document.createElement('a');
-            website.textContent = current.website;
+            website.textContent = "Visit Website";
             website.setAttribute('href', current.website);
             website.setAttribute('target', '_blank');
             detailsDiv.appendChild(website);
@@ -662,10 +659,8 @@ function parsePickerDate() {
         startDate = formatDateForQuery(pickerDate, true);
         endDatePicker.options.defaultDate = pickerDate;
         endDatePicker.options.minDate = pickerDate;
-        console.log(startDate);
     } else {
         endDate = formatDateForQuery(pickerDate, false);
-        console.log(endDate);
     }
 }
 
@@ -717,12 +712,6 @@ function formatTime(timeString) {
     return hour + ':' + parts[1] + ' ' + dayPart;
 }
 
-<<<<<<< HEAD
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-=======
 function sleep (milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
->>>>>>> 5ef43f2504afcc85d158aef75e1ae7734474c1a1
