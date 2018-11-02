@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-$("#clicker").on("click", function(){
+$(".clicker").on("click", function(){
     $("body").css({"overflow":"visible"})
     $(".line").css({
         'position': 'relative',
@@ -162,7 +162,6 @@ function getGooglePlacesAroundEventVenue(location) {
         if (status == google.maps.places.PlacesServiceStatus.OK && results.length >= 6) {
             placeMarkers = [];
             populateLocations(results);
-            setMapBounds(placeMarkers);
         } else if(status == google.maps.places.PlacesServiceStatus.OK && results.length < 6) {
             searchRadius+= 2000;
             getGooglePlacesAroundEventVenue(location);
@@ -206,6 +205,7 @@ async function populateLocations(locations) {
         createMapMarker(current, card, 'place');
         await sleep(100);
     }
+    setMapBounds(placeMarkers);
     resultsListDiv.scrollTo(0,0);
 }
 
