@@ -52,29 +52,79 @@ document.addEventListener('DOMContentLoaded', function() {
     options.format = ('mm/dd/yyyy');
     options.onSelect = parsePickerDate;
     options.container = dateSelectDiv;
-    //options.onClose = setBodyOverFlow;
+    
     startDatePicker = M.Datepicker.init(startDatePicker, options);
     endDatePicker = M.Datepicker.init(endDatePicker, options); 
     console.log(startDatePicker);
+
+    $("#clicker").on("click", button0); 
+    $("#clicker1").on("click", button1); 
+    $("#clicker2").on("click", button2); 
 });
 
-
+<<<<<<< HEAD
 $(".clicker").on("click", function(){
+=======
+function button0() {
+>>>>>>> 5ef43f2504afcc85d158aef75e1ae7734474c1a1
     $("body").css({"overflow":"visible"})
     $(".line").css({
+        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
         'top': '50%', 
         'margin': '0 auto',  
-        'border-right': '2px solid rgba(255,255,255, 0.75)', 
-        'font-size': '40px',  
+        'border-right': '1px solid rgba(255,255,255, 0.75)', 
+        'font-size': '35px',  
         'white-space': 'nowrap', 
-        'overflow': 'hidden', 'transform': 'translateY(-50%)'
+       
     })
     $(".anim-typewriter").css({
-        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
+        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
     })
-    console.log("Button Clicked")
-})
+  
+}
+
+function button1(){
+    $("html").addClass('auto-scroll');
+    $("body").css({"overflow":"visible"});
+    window.location = '#section1';
+    $('html').removeClass('auto-scroll');
+    
+    document.getElementById('section2').scrollIntoView();
+
+    $(".line1").css({
+        'overflow': 'hidden', 'transform': 'translateY(-50%)',
+        'position': 'relative',
+        'top': '50%', 
+        'margin': '0 auto',  
+        'border-right': '1px solid rgba(255,255,255, 0.75)', 
+        'font-size': '35px',  
+        'white-space': 'nowrap', 
+       
+    })
+    $(".anim-typewriter1").css({
+        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
+    })
+    
+}
+
+function button2(){
+    $("body").css({"overflow":"visible"})
+    $(".line2").css({
+        'overflow': 'hidden', 'transform': 'translateY(-50%)',
+        'position': 'relative',
+        'top': '50%', 
+        'margin': '0 auto',  
+        'border-right': '1px solid rgba(255,255,255, 0.75)', 
+        'font-size': '35px',  
+        'white-space': 'nowrap', 
+       
+    })
+    $(".anim-typewriter2").css({
+        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
+    })
+  
+}
 
 function setBodyOverFlow() {
     setTimeout(() => {
@@ -113,7 +163,7 @@ function findEvents(event) {
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
-    console.log(url);
+    
     document.getElementById('section4').scrollIntoView();
 
     $.ajax({
@@ -219,6 +269,7 @@ async function populateUserChoices() {
     resultsListDiv.classList.remove('cards-container');
     resultsListDiv.classList.add('details-container');
     mapElement.classList.add('hidden');
+    $('#results-message').addClass('hidden');
 
     let eventHeader = document.createElement('h3');
     eventHeader.textContent = 'Event';
@@ -226,6 +277,7 @@ async function populateUserChoices() {
 
     let eventCard = createEventCard(chosenEvent, chosenEvent._embedded.venues[0], true);
     eventCard.classList.add('horizontal');
+    eventCard.classList.add('result-card');
     resultsListDiv.appendChild(eventCard);
 
     let placeHeader = document.createElement('h3');
@@ -235,6 +287,7 @@ async function populateUserChoices() {
     await sleep(500);
 
     let barCard = createPlaceCard(chosenBar, true);
+    barCard.classList.add('result-card');
     resultsListDiv.appendChild(barCard);
 }
 
@@ -320,8 +373,9 @@ function createEventCard(event, venue, chosen) {
     if(event.dates) {
         let dateDiv = document.createElement('p');
         dateDiv.setAttribute("data-name",event.dates.start.localDate);
-        dateDiv.textContent = event.dates.start.localDate;
+        dateDiv.textContent = formatDate(event.dates.start.localDate);
         detailsDiv.appendChild(dateDiv);
+        dateDiv.classList.add('date-div')
     }
 
     if(!chosen) {
@@ -391,7 +445,10 @@ function createPlaceCard(current, chosen) {
         let rating = document.createElement('p');
         rating.textContent = 'Rated: ' + current.rating;
         detailsDiv.appendChild(rating);
+        rating.classList.add('rating-color')
+
     }
+  
 
     let address = document.createElement('p');
     address.textContent = current.vicinity;
@@ -458,6 +515,7 @@ function startOver() {
         resultsListDiv.classList.remove('details-container');
         resultsListDiv.classList.add('cards-container');
         mapElement.classList.remove('hidden');
+        $('#results-message').removeClass('hidden');
     }
 }
 
@@ -659,6 +717,12 @@ function formatTime(timeString) {
     return hour + ':' + parts[1] + ' ' + dayPart;
 }
 
+<<<<<<< HEAD
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+=======
+function sleep (milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+>>>>>>> 5ef43f2504afcc85d158aef75e1ae7734474c1a1

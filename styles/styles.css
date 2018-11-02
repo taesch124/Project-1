@@ -12,6 +12,10 @@ html {
     scroll-behavior: smooth;
 }
 
+.auto-scroll {
+    scroll-behavior: auto;
+}
+
 
 html,
 body {
@@ -65,6 +69,10 @@ body {
     animation: fade-in 1s ease-in;
 }
 
+.result-card {
+    margin: 0;
+}
+
 .result {
     width: 280px;
 }
@@ -84,6 +92,7 @@ body {
 }
 
 .event-location {
+    font-size: small;
     color: blue;
 }
 
@@ -132,6 +141,12 @@ body {
 
 }
 
+.finalpage {
+ text-align: center;
+ font-family: 'Vidaloka', serif;
+ font-size: 40px;
+}
+
 
 #section1 {
     height:100vh;
@@ -169,10 +184,13 @@ body {
     
 }
 
+.card a, .card-details{
+    text-align: center;
+}
+
 #section4{
     height:100vh;
-    background: gainsboro; 
-    background-image: url("https://www.transparenttextures.com/patterns/clean-textile.png")
+    background-image: url("https://www.transparenttextures.com/patterns/beige-paper.png"); 
 }
 
 
@@ -223,7 +241,7 @@ body {
         width: 0;   
     }
     to {
-        width: 15em; 
+        width: 13em; 
     }
 }
 
@@ -236,6 +254,57 @@ body {
     }
 }
 
+
+.card-title {
+    text-shadow: 1.5px 1.5px gray;
+}
+.results-container {
+    width: 90%;
+
+}
+
+#results-message {
+    margin-bottom: 0;
+}
+
+#results-list {
+    margin-top: 3rem;
+    padding-left: 30px;
+    max-height: 75%;
+}
+
+::placeholder {
+    color: white;
+}
+
+
+.card {
+    background-color:lightgray;
+}
+.card:hover {
+    background-color:gray;
+    box-shadow: 5px 5px lightgray;
+}
+
+.date-div {
+    font-size: small;
+}
+
+.rating-color {
+    color: yellow;
+}
+
+#title1{
+    text-shadow: 1.5px 1.5px gray;
+}
+
+#results-list {
+    text-align: center;
+}
+
+h3 {
+    text-shadow: 2px 2px gray;
+}
 /*
 ===============================================
 Typography
@@ -247,6 +316,10 @@ h4 {
     font-weight: bold;
 }
 
+h3 {
+    margin: 0 0 1rem 0;
+}
+
 #map {
     padding-top: 50px;
     height: 500px;
@@ -255,6 +328,7 @@ h4 {
     top:100px;
     left:75px;
     align-self: center;
+    box-shadow: 5px 5px rgb(150, 144, 144);
  }
 
 
@@ -282,11 +356,11 @@ Scroll Bar
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: rgba(255,0,0,0.8); 
+    background:  #d69b8a;; 
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 }
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(255,0,0,0.4); 
+	background: #ebcdc5;; 
 }
 
 
