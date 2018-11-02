@@ -65,16 +65,17 @@ document.addEventListener('DOMContentLoaded', function() {
 function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
+        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
         'top': '50%', 
         'margin': '0 auto',  
-        'border-right': '2px solid rgba(255,255,255, 0.75)', 
-        'font-size': '40px',  
+        'border-right': '1px solid rgba(255,255,255, 0.75)', 
+        'font-size': '35px',  
         'white-space': 'nowrap', 
-        'overflow': 'hidden', 'transform': 'translateY(-50%)'
+       
     })
     $(".anim-typewriter").css({
-        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
+        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
     })
   
 }
