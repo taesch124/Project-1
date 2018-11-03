@@ -248,10 +248,10 @@ body {
 }
 
 @keyframes blinkTextCursor {
-    from {
+    from, to {
         border-right-color: rgba(255,255,255, 0.75)
         }
-    to {
+    50% {
         border-right-color: transparent;
     }
 }

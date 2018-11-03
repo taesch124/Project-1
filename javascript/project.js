@@ -62,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
-        'overflow': 'hidden', 'transform': 'translateY(-50%)',
+        'overflow': 'hidden',
         'position': 'relative',
-        'top': '50%', 
+        // 'top': '50%', 
         'margin': '0 auto',  
         'border-right': '1px solid rgba(255,255,255, 0.75)', 
         'font-size': '35px',  
@@ -134,12 +134,19 @@ function findEvents(event) {
     $(".events-view").empty();
     var url;
 
+    
+
     var keyword = $("#event-search").val(). trim();
     var cityInput = $("#city-search").val(). trim();
     var stateInput = $('#state-select').val().trim();
     
+    localStorage.clear();
+    localStorage.setItem("thekeyword", keyword);
+    localStorage.setItem("thecity", cityInput);
+    localStorage.setItem("thestate", stateInput);
+
     if(cityInput) {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
         "&city=" +cityInput + 
         "&stateCode=" + stateInput + 
         "&startDateTime=" + startDate +
@@ -148,7 +155,7 @@ function findEvents(event) {
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     } else {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
         "&stateCode=" + stateInput +
         "&startDateTime=" + startDate +
         "&endDateTime=" + endDate + 
