@@ -62,18 +62,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
-        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
         'top': '50%', 
         'margin': '0 auto',  
-        'border-right': '1px solid rgba(255,255,255, 0.75)', 
-        'font-size': '35px',  
+        'border-right': '2px solid rgba(255,255,255, 0.75)', 
+        'font-size': '40px',  
         'white-space': 'nowrap', 
-        
-       
+        'overflow': 'hidden', 'transform': 'translateY(-50%)'
     })
     $(".anim-typewriter").css({
-        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
+        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
   
 }
@@ -87,17 +85,16 @@ function button1(){
     document.getElementById('section2').scrollIntoView();
 
     $(".line1").css({
-        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
         'top': '50%', 
         'margin': '0 auto',  
-        'border-right': '1px solid rgba(255,255,255, 0.75)', 
-        'font-size': '35px',  
+        'border-right': '2px solid rgba(255,255,255, 0.75)', 
+        'font-size': '40px',  
         'white-space': 'nowrap', 
-       
+        'overflow': 'hidden', 'transform': 'translateY(-50%)'
     })
     $(".anim-typewriter1").css({
-        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
+        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
     
 }
@@ -105,17 +102,16 @@ function button1(){
 function button2(){
     $("body").css({"overflow":"visible"})
     $(".line2").css({
-        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
         'top': '50%', 
         'margin': '0 auto',  
-        'border-right': '1px solid rgba(255,255,255, 0.75)', 
-        'font-size': '35px',  
+        'border-right': '2px solid rgba(255,255,255, 0.75)', 
+        'font-size': '40px',  
         'white-space': 'nowrap', 
-       
+        'overflow': 'hidden', 'transform': 'translateY(-50%)'
     })
     $(".anim-typewriter2").css({
-        'animation': 'typewriter 4s steps(20, end), blinkTextCursor 500ms step-end infinite normal'
+        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
   
 }
@@ -135,7 +131,6 @@ function findEvents(event) {
     $(".events-view").empty();
     var url;
 
-    
     if ($("#event-search").val(). trim()) {
         var keyword = $("#event-search").val(). trim();
         localStorage.setItem("thekeyword", keyword)
@@ -150,9 +145,7 @@ function findEvents(event) {
      var stateInput = $('#state-select').val().trim();
      localStorage.setItem("thestate", stateInput);
     }
-
-
-
+    
     if(cityInput) {
         url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
         "&city=" +cityInput + 
@@ -173,7 +166,6 @@ function findEvents(event) {
     }
     
     document.getElementById('section4').scrollIntoView();
-    console.log(url);
 
     $.ajax({
         url: url,
@@ -229,7 +221,7 @@ function getGooglePlacesAroundEventVenue(location) {
         }
     })
 }
-
+ 
 async function populateEvents(events) {
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
@@ -247,18 +239,14 @@ async function populateEvents(events) {
         codeAddress(geocoder, place, card);
         await sleep(100);
     }  
-
     setMapBounds(venueMarkers);
     $(document).on('click', '.select-event-link', selectEvent);
 }
 
 async function populateLocations(locations) {
-
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
-
-    $(".finalpage2").text("Drinks? Food? You pick!")
 
     let ratingSort = sortPlacesByRating(locations);
     for(let i = 0; i < ratingSort.length; i++) {
@@ -285,7 +273,6 @@ async function populateUserChoices() {
     resultsListDiv.classList.add('details-container');
     mapElement.classList.add('hidden');
     $('#results-message').addClass('hidden');
-    $(".finalpage").text("Drinks? Food? You pick!")
 
     let eventHeader = document.createElement('h3');
     eventHeader.textContent = 'Event';
@@ -487,7 +474,7 @@ function createPlaceCard(current, chosen) {
 
         if(current.website) {
             let website = document.createElement('a');
-            website.textContent = "Visit Website";
+            website.textContent = current.website;
             website.setAttribute('href', current.website);
             website.setAttribute('target', '_blank');
             detailsDiv.appendChild(website);
