@@ -56,8 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $("#clicker").on("click", button0); 
     $("#clicker1").on("click", button1); 
-    $("#clicker2").on("click", button2); 
+    $("#clicker2").on("click", button2);
+
+    populateSavedValues();
 });
+
+function populateSavedValues() {
+    if(localStorage.getItem('thekeyword')) {
+        $('#event-search').val(localStorage.getItem('thekeyword'));
+    }
+}
 
 function button0() {
     $("body").css({"overflow":"visible"})
@@ -131,23 +139,23 @@ function findEvents(event) {
     $(".events-view").empty();
     var url;
 
+    var keyword = $("#event-search").val().trim();
     if ($("#event-search").val(). trim()) {
-        var keyword = $("#event-search").val(). trim();
         localStorage.setItem("thekeyword", keyword)
     }
 
+    var cityInput = $("#city-search").val().trim();
     if ($("#city-search").val(). trim())  {
-        var cityInput = $("#city-search").val(). trim();
         localStorage.setItem("thecity", cityInput);
     }
     
+    var stateInput = $('#state-select').val().trim();
     if ($('#state-select').val().trim()) {
-     var stateInput = $('#state-select').val().trim();
      localStorage.setItem("thestate", stateInput);
     }
     
     if(cityInput) {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
         "&city=" +cityInput + 
         "&stateCode=" + stateInput + 
         "&startDateTime=" + startDate +
@@ -156,7 +164,7 @@ function findEvents(event) {
         "&unit=miles" +
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     } else {
-        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
+        url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + keyword + 
         "&stateCode=" + stateInput +
         "&startDateTime=" + startDate +
         "&endDateTime=" + endDate + 
@@ -165,6 +173,7 @@ function findEvents(event) {
         "&apikey=A16slcgq1hEalk1fxoMzQE4ByKDVYvCS";
     }
     
+    console.log(url);
     document.getElementById('section4').scrollIntoView();
 
     $.ajax({
