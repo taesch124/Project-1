@@ -62,13 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function button0() {
     $("body").css({"overflow":"visible"})
     $(".line").css({
-        'overflow': 'hidden',
+        'overflow': 'hidden', 'transform': 'translateY(-50%)',
         'position': 'relative',
-        // 'top': '50%', 
+        'top': '50%', 
         'margin': '0 auto',  
         'border-right': '1px solid rgba(255,255,255, 0.75)', 
         'font-size': '35px',  
         'white-space': 'nowrap', 
+        
        
     })
     $(".anim-typewriter").css({
