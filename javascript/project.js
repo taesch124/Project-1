@@ -136,15 +136,22 @@ function findEvents(event) {
     var url;
 
     
+    if ($("#event-search").val(). trim()) {
+        var keyword = $("#event-search").val(). trim();
+        localStorage.setItem("thekeyword", keyword)
+    }
 
-    var keyword = $("#event-search").val(). trim();
-    var cityInput = $("#city-search").val(). trim();
-    var stateInput = $('#state-select').val().trim();
+    if ($("#city-search").val(). trim())  {
+        var cityInput = $("#city-search").val(). trim();
+        localStorage.setItem("thecity", cityInput);
+    }
     
-    localStorage.clear();
-    localStorage.setItem("thekeyword", keyword);
-    localStorage.setItem("thecity", cityInput);
-    localStorage.setItem("thestate", stateInput);
+    if ($('#state-select').val().trim()) {
+     var stateInput = $('#state-select').val().trim();
+     localStorage.setItem("thestate", stateInput);
+    }
+
+
 
     if(cityInput) {
         url = "https://app.ticketmaster.com/discovery/v2/events.json?keyword=" + localStorage.getItem("thekeyword") + 
@@ -246,9 +253,12 @@ async function populateEvents(events) {
 }
 
 async function populateLocations(locations) {
+
     while(resultsListDiv.firstChild) {
         resultsListDiv.removeChild(resultsListDiv.firstChild);
     }
+
+    $(".finalpage2").text("Drinks? Food? You pick!")
 
     let ratingSort = sortPlacesByRating(locations);
     for(let i = 0; i < ratingSort.length; i++) {
@@ -275,6 +285,7 @@ async function populateUserChoices() {
     resultsListDiv.classList.add('details-container');
     mapElement.classList.add('hidden');
     $('#results-message').addClass('hidden');
+    $(".finalpage").text("Drinks? Food? You pick!")
 
     let eventHeader = document.createElement('h3');
     eventHeader.textContent = 'Event';
