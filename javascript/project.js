@@ -119,7 +119,7 @@ function button2(){
         'overflow': 'hidden', 'transform': 'translateY(-50%)'
     })
     $(".anim-typewriter2").css({
-        'animation': 'typewriter 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
+        'animation': 'typewriter1 4s steps(28) 1s 1 normal both, blinkTextCursor 500ms steps(28) infinite normal'
     })
   
 }
